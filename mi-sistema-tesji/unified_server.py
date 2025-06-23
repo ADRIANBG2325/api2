@@ -6,7 +6,7 @@ Versión Final - FastAPI configurado correctamente
 
 from fastapi import FastAPI, HTTPException, Depends, Request, Response, status
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import HTMLResponse, FileResponse, StreamingResponse
+from fastapi.responses import HTMLResponse, FileResponse, StreamingResponse, RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import create_engine, Column, Integer, String, DateTime, Text, ForeignKey, Boolean, func
 from sqlalchemy.orm import declarative_base, sessionmaker, Session
@@ -597,311 +597,245 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ==================== SERVIR ARCHIVOS ESTÁTICOS CORRECTAMENTE ====================
+# ==================== SERVIR ARCHIVOS ESTÁTICOS ====================
 
-# Montar archivos estáticos ANTES de las rutas
 try:
-    # Verificar que los directorios existen
-    static_dir = "static"
-    templates_dir = "templates"
-    
-    if os.path.exists(static_dir):
-        app.mount("/static", StaticFiles(directory=static_dir), name="static")
-        logger.info(f"✅ Archivos estáticos montados desde /{static_dir}")
+    if os.path.exists("static"):
+        app.mount("/static", StaticFiles(directory="static"), name="static")
+        logger.info("✅ Archivos estáticos montados desde /static")
     else:
-        logger.warning(f"⚠️ Directorio /{static_dir} no encontrado")
+        logger.warning("⚠️ Directorio /static no encontrado")
         
-    # NO montar templates como estáticos, solo servir archivos específicos
-    
 except Exception as e:
     logger.error(f"❌ Error montando archivos estáticos: {e}")
 
-# ==================== FUNCIONES PARA SERVIR HTML ====================
-
-# ==================== RUTAS PARA PÁGINAS HTML ====================
-
-def get_file_path(filename: str) -> str:
-    """Obtiene la ruta completa del archivo"""
-    # Intentar en templates/ primero
-    template_path = os.path.join(os.getcwd(), "templates", filename)
-    if os.path.exists(template_path):
-        logger.info(f"✅ Archivo encontrado: {template_path}")
-        return template_path
-    
-    # Intentar en la raíz
-    root_path = os.path.join(os.getcwd(), filename)
-    if os.path.exists(root_path):
-        logger.info(f"✅ Archivo encontrado: {root_path}")
-        return root_path
-    
-    logger.error(f"❌ Archivo no encontrado: {filename}")
-    return None
+# ==================== RUTAS PARA PÁGINAS HTML - ENFOQUE LIMPIO ====================
 
 @app.get("/", response_class=HTMLResponse)
-async def read_root():
+async def get_inicio():
     """Página principal del sistema"""
-    return HTMLResponse("""
-    <!DOCTYPE html>
-    <html lang="es">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>TESJI - Sistema RFID Completo</title>
-        <style>
-            * { margin: 0; padding: 0; box-sizing: border-box; }
-            body { 
-                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
-                min-height: 100vh; 
-                color: white; 
-                display: flex; 
-                align-items: center; 
-                justify-content: center;
-            }
-            .container { 
-                max-width: 700px; 
-                text-align: center; 
-                padding: 40px 30px; 
-                background: rgba(255,255,255,0.1); 
-                border-radius: 20px; 
-                backdrop-filter: blur(10px); 
-                box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-            }
-            h1 { 
-                font-size: 3.5em; 
-                margin-bottom: 10px; 
-                text-shadow: 2px 2px 4px rgba(0,0,0,0.3); 
-            }
-            .subtitle { 
-                font-size: 1.2em; 
-                margin-bottom: 40px; 
-                opacity: 0.9; 
-            }
-            .access-links {
-                display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-                gap: 15px;
-                margin-top: 20px;
-            }
-            .access-link {
-                display: block;
-                padding: 15px 20px;
-                background: rgba(255,255,255,0.1);
-                color: white;
-                text-decoration: none;
-                border-radius: 10px;
-                transition: all 0.3s ease;
-                border: 1px solid rgba(255,255,255,0.2);
-            }
-            .access-link:hover {
-                background: rgba(255,255,255,0.2);
-                transform: translateY(-2px);
-            }
-            .access-icon {
-                font-size: 1.8em;
-                display: block;
-                margin-bottom: 8px;
-            }
-            .access-title {
-                font-weight: 600;
-                margin-bottom: 5px;
-            }
-            .access-desc {
-                font-size: 0.9em;
-                opacity: 0.8;
-            }
-            .status-info {
-                background: rgba(255,255,255,0.1);
-                padding: 20px;
-                border-radius: 10px;
-                margin: 20px 0;
-                font-size: 0.9em;
-            }
-            .debug-info {
-                background: rgba(0,0,0,0.2);
-                padding: 15px;
-                border-radius: 10px;
-                margin: 20px 0;
-                font-size: 0.8em;
-                text-align: left;
-            }
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <h1>🎓 TESJI</h1>
-            <p class="subtitle">Sistema de Control de Asistencias con RFID</p>
-            
-            <div class="status-info">
-                <p>✅ Sistema desplegado en Render</p>
-                <p>🌐 Acceso desde cualquier dispositivo</p>
-                <p>🔒 HTTPS habilitado automáticamente</p>
+    try:
+        with open("templates/welcome.html", "r", encoding="utf-8") as f:
+            return HTMLResponse(content=f.read())
+    except FileNotFoundError:
+        # Si no existe welcome.html, mostrar página de inicio embebida
+        return HTMLResponse("""
+        <!DOCTYPE html>
+        <html lang="es">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>TESJI - Sistema RFID</title>
+            <style>
+                * { margin: 0; padding: 0; box-sizing: border-box; }
+                body { 
+                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                    min-height: 100vh; 
+                    color: white; 
+                    display: flex; 
+                    align-items: center; 
+                    justify-content: center;
+                }
+                .container { 
+                    max-width: 700px; 
+                    text-align: center; 
+                    padding: 40px 30px; 
+                    background: rgba(255,255,255,0.1); 
+                    border-radius: 20px; 
+                    backdrop-filter: blur(10px); 
+                    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+                }
+                h1 { 
+                    font-size: 3.5em; 
+                    margin-bottom: 10px; 
+                    text-shadow: 2px 2px 4px rgba(0,0,0,0.3); 
+                }
+                .subtitle { 
+                    font-size: 1.2em; 
+                    margin-bottom: 40px; 
+                    opacity: 0.9; 
+                }
+                .access-links {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                    gap: 15px;
+                    margin-top: 20px;
+                }
+                .access-link {
+                    display: block;
+                    padding: 15px 20px;
+                    background: rgba(255,255,255,0.1);
+                    color: white;
+                    text-decoration: none;
+                    border-radius: 10px;
+                    transition: all 0.3s ease;
+                    border: 1px solid rgba(255,255,255,0.2);
+                }
+                .access-link:hover {
+                    background: rgba(255,255,255,0.2);
+                    transform: translateY(-2px);
+                }
+                .access-icon {
+                    font-size: 1.8em;
+                    display: block;
+                    margin-bottom: 8px;
+                }
+                .access-title {
+                    font-weight: 600;
+                    margin-bottom: 5px;
+                }
+                .access-desc {
+                    font-size: 0.9em;
+                    opacity: 0.8;
+                }
+                .status-info {
+                    background: rgba(255,255,255,0.1);
+                    padding: 20px;
+                    border-radius: 10px;
+                    margin: 20px 0;
+                    font-size: 0.9em;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <h1>🎓 TESJI</h1>
+                <p class="subtitle">Sistema de Control de Asistencias con RFID</p>
+                
+                <div class="status-info">
+                    <p>✅ Sistema funcionando en Render</p>
+                    <p>🌐 Acceso desde cualquier dispositivo</p>
+                    <p>🔒 HTTPS habilitado automáticamente</p>
+                </div>
+                
+                <div class="access-links">
+                    <a href="/welcome" class="access-link">
+                        <span class="access-icon">🎫</span>
+                        <div class="access-title">Lector RFID</div>
+                        <div class="access-desc">Registro de asistencias</div>
+                    </a>
+                    
+                    <a href="/maestros" class="access-link">
+                        <span class="access-icon">👨‍🏫</span>
+                        <div class="access-title">Maestros</div>
+                        <div class="access-desc">Panel de profesores</div>
+                    </a>
+                    
+                    <a href="/admin" class="access-link">
+                        <span class="access-icon">👨‍💼</span>
+                        <div class="access-title">Administración</div>
+                        <div class="access-desc">Panel administrativo</div>
+                    </a>
+                    
+                    <a href="/estudiantes" class="access-link">
+                        <span class="access-icon">👨‍🎓</span>
+                        <div class="access-title">Estudiantes</div>
+                        <div class="access-desc">Panel de estudiantes</div>
+                    </a>
+                    
+                    <a href="/api/health" class="access-link">
+                        <span class="access-icon">🔧</span>
+                        <div class="access-title">Estado del Sistema</div>
+                        <div class="access-desc">Diagnósticos y salud</div>
+                    </a>
+                </div>
             </div>
-            
-            <div class="debug-info">
-                <p><strong>Debug Info:</strong></p>
-                <p>📁 Directorio actual: """ + os.getcwd() + """</p>
-                <p>📂 Templates existe: """ + str(os.path.exists("templates")) + """</p>
-                <p>📂 Static existe: """ + str(os.path.exists("static")) + """</p>
-                <p>📄 welcome.html: """ + str(os.path.exists("templates/welcome.html")) + """</p>
-                <p>📄 admin.html: """ + str(os.path.exists("templates/admin.html")) + """</p>
-            </div>
-            
-            <div class="access-links">
-                <a href="/welcome.html" class="access-link">
-                    <span class="access-icon">🎫</span>
-                    <div class="access-title">Lector RFID</div>
-                    <div class="access-desc">Registro de asistencias</div>
-                </a>
-                
-                <a href="/login-teacher.html" class="access-link">
-                    <span class="access-icon">👨‍🏫</span>
-                    <div class="access-title">Maestros</div>
-                    <div class="access-desc">Panel de profesores</div>
-                </a>
-                
-                <a href="/admin.html" class="access-link">
-                    <span class="access-icon">👨‍💼</span>
-                    <div class="access-title">Administración</div>
-                    <div class="access-desc">Panel administrativo</div>
-                </a>
-                
-                <a href="/student.html" class="access-link">
-                    <span class="access-icon">👨‍🎓</span>
-                    <div class="access-title">Estudiantes</div>
-                    <div class="access-desc">Panel de estudiantes</div>
-                </a>
-                
-                <a href="/api/health" class="access-link">
-                    <span class="access-icon">🔧</span>
-                    <div class="access-title">Estado del Sistema</div>
-                    <div class="access-desc">Diagnósticos y salud</div>
-                </a>
-            </div>
-        </div>
-    </body>
-    </html>
-    """)
+        </body>
+        </html>
+        """)
 
-@app.get("/welcome.html")
-async def serve_welcome():
+@app.get("/welcome", response_class=HTMLResponse)
+async def get_welcome():
     """Página de bienvenida con lector RFID"""
-    logger.info("🔍 Solicitando welcome.html")
-    file_path = get_file_path("welcome.html")
-    if file_path:
-        return FileResponse(file_path, media_type="text/html")
-    else:
-        return HTMLResponse("""
-        <h1>Error: welcome.html no encontrado</h1>
-        <p>Directorio actual: """ + os.getcwd() + """</p>
-        <p>Archivos en templates/: """ + str(os.listdir("templates") if os.path.exists("templates") else "No existe") + """</p>
-        <a href="/">← Volver</a>
-        """, status_code=404)
+    try:
+        with open("templates/welcome.html", "r", encoding="utf-8") as f:
+            return HTMLResponse(content=f.read())
+    except FileNotFoundError:
+        raise HTTPException(status_code=404, detail="welcome.html no encontrado")
 
-@app.get("/admin.html")
-async def serve_admin():
-    """Panel de administración"""
-    logger.info("🔍 Solicitando admin.html")
-    file_path = get_file_path("admin.html")
-    if file_path:
-        return FileResponse(file_path, media_type="text/html")
-    else:
-        return HTMLResponse("""
-        <h1>Error: admin.html no encontrado</h1>
-        <p>Directorio actual: """ + os.getcwd() + """</p>
-        <p>Archivos en templates/: """ + str(os.listdir("templates") if os.path.exists("templates") else "No existe") + """</p>
-        <a href="/">← Volver</a>
-        """, status_code=404)
-
-@app.get("/teacher.html")
-async def serve_teacher():
+@app.get("/maestros", response_class=HTMLResponse)
+async def get_maestros():
     """Panel de maestros"""
-    logger.info("🔍 Solicitando teacher.html")
-    file_path = get_file_path("enhanced-teacher.html")
-    if file_path:
-        return FileResponse(file_path, media_type="text/html")
-    else:
-        return HTMLResponse("""
-        <h1>Error: enhanced-teacher.html no encontrado</h1>
-        <p>Directorio actual: """ + os.getcwd() + """</p>
-        <p>Archivos en templates/: """ + str(os.listdir("templates") if os.path.exists("templates") else "No existe") + """</p>
-        <a href="/">← Volver</a>
-        """, status_code=404)
+    try:
+        # Intentar enhanced-teacher.html primero, luego login-teacher.html
+        try:
+            with open("templates/enhanced-teacher.html", "r", encoding="utf-8") as f:
+                return HTMLResponse(content=f.read())
+        except FileNotFoundError:
+            with open("templates/login-teacher.html", "r", encoding="utf-8") as f:
+                return HTMLResponse(content=f.read())
+    except FileNotFoundError:
+        raise HTTPException(status_code=404, detail="Página de maestros no encontrada")
 
-@app.get("/student.html")
-async def serve_student():
+@app.get("/admin", response_class=HTMLResponse)
+async def get_admin():
+    """Panel de administración"""
+    try:
+        with open("templates/admin.html", "r", encoding="utf-8") as f:
+            return HTMLResponse(content=f.read())
+    except FileNotFoundError:
+        raise HTTPException(status_code=404, detail="admin.html no encontrado")
+
+@app.get("/estudiantes", response_class=HTMLResponse)
+async def get_estudiantes():
     """Panel de estudiantes"""
-    logger.info("🔍 Solicitando student.html")
-    file_path = get_file_path("student.html")
-    if file_path:
-        return FileResponse(file_path, media_type="text/html")
-    else:
-        return HTMLResponse("""
-        <h1>Error: student.html no encontrado</h1>
-        <p>Directorio actual: """ + os.getcwd() + """</p>
-        <p>Archivos en templates/: """ + str(os.listdir("templates") if os.path.exists("templates") else "No existe") + """</p>
-        <a href="/">← Volver</a>
-        """, status_code=404)
+    try:
+        with open("templates/student.html", "r", encoding="utf-8") as f:
+            return HTMLResponse(content=f.read())
+    except FileNotFoundError:
+        raise HTTPException(status_code=404, detail="student.html no encontrado")
 
-@app.get("/login-teacher.html")
-async def serve_teacher_login():
+@app.get("/login-teacher", response_class=HTMLResponse)
+async def get_login_teacher():
     """Página de login para maestros"""
-    logger.info("🔍 Solicitando login-teacher.html")
-    file_path = get_file_path("login-teacher.html")
-    if file_path:
-        return FileResponse(file_path, media_type="text/html")
-    else:
-        return HTMLResponse("""
-        <h1>Error: login-teacher.html no encontrado</h1>
-        <p>Directorio actual: """ + os.getcwd() + """</p>
-        <p>Archivos en templates/: """ + str(os.listdir("templates") if os.path.exists("templates") else "No existe") + """</p>
-        <a href="/">← Volver</a>
-        """, status_code=404)
+    try:
+        with open("templates/login-teacher.html", "r", encoding="utf-8") as f:
+            return HTMLResponse(content=f.read())
+    except FileNotFoundError:
+        raise HTTPException(status_code=404, detail="login-teacher.html no encontrado")
 
-@app.get("/enhanced-teacher.html")
-async def serve_enhanced_teacher():
-    """Panel de maestros mejorado"""
-    logger.info("🔍 Solicitando enhanced-teacher.html")
-    file_path = get_file_path("enhanced-teacher.html")
-    if file_path:
-        return FileResponse(file_path, media_type="text/html")
-    else:
-        return HTMLResponse("""
-        <h1>Error: enhanced-teacher.html no encontrado</h1>
-        <p>Directorio actual: """ + os.getcwd() + """</p>
-        <p>Archivos en templates/: """ + str(os.listdir("templates") if os.path.exists("templates") else "No existe") + """</p>
-        <a href="/">← Volver</a>
-        """, status_code=404)
-
-@app.get("/enhanced-welcome.html")
-async def serve_enhanced_welcome():
-    """Página de bienvenida mejorada"""
-    logger.info("🔍 Solicitando enhanced-welcome.html")
-    file_path = get_file_path("enhanced-welcome.html")
-    if file_path:
-        return FileResponse(file_path, media_type="text/html")
-    else:
-        return HTMLResponse("""
-        <h1>Error: enhanced-welcome.html no encontrado</h1>
-        <p>Directorio actual: """ + os.getcwd() + """</p>
-        <p>Archivos en templates/: """ + str(os.listdir("templates") if os.path.exists("templates") else "No existe") + """</p>
-        <a href="/">← Volver</a>
-        """, status_code=404)
-
-@app.get("/device-selector.html")
-async def serve_device_selector():
+@app.get("/device-selector", response_class=HTMLResponse)
+async def get_device_selector():
     """Selector de dispositivos"""
-    logger.info("🔍 Solicitando device-selector.html")
-    file_path = get_file_path("device-selector.html")
-    if file_path:
-        return FileResponse(file_path, media_type="text/html")
-    else:
-        return HTMLResponse("""
-        <h1>Error: device-selector.html no encontrado</h1>
-        <p>Directorio actual: """ + os.getcwd() + """</p>
-        <p>Archivos en templates/: """ + str(os.listdir("templates") if os.path.exists("templates") else "No existe") + """</p>
-        <a href="/">← Volver</a>
-        """, status_code=404)
+    try:
+        with open("templates/device-selector.html", "r", encoding="utf-8") as f:
+            return HTMLResponse(content=f.read())
+    except FileNotFoundError:
+        raise HTTPException(status_code=404, detail="device-selector.html no encontrado")
+
+# Rutas de compatibilidad con .html
+@app.get("/welcome.html", response_class=HTMLResponse)
+async def get_welcome_html():
+    return await get_welcome()
+
+@app.get("/admin.html", response_class=HTMLResponse) 
+async def get_admin_html():
+    return await get_admin()
+
+@app.get("/student.html", response_class=HTMLResponse)
+async def get_student_html():
+    return await get_estudiantes()
+
+@app.get("/teacher.html", response_class=HTMLResponse)
+async def get_teacher_html():
+    return await get_maestros()
+
+@app.get("/login-teacher.html", response_class=HTMLResponse)
+async def get_login_teacher_html():
+    return await get_login_teacher()
+
+@app.get("/enhanced-teacher.html", response_class=HTMLResponse)
+async def get_enhanced_teacher_html():
+    return await get_maestros()
+
+@app.get("/enhanced-welcome.html", response_class=HTMLResponse)
+async def get_enhanced_welcome_html():
+    return await get_welcome()
+
+@app.get("/device-selector.html", response_class=HTMLResponse)
+async def get_device_selector_html():
+    return await get_device_selector()
 
 # ==================== MIDDLEWARE ====================
 
@@ -1234,7 +1168,7 @@ async def health_check():
             },
             "files": {
                 "static_exists": os.path.exists("static"),
-                "templates_exists": os.path.exists("templates"),
+                "templates_exists": False,
                 "welcome_html": os.path.exists("templates/welcome.html"),
                 "admin_html": os.path.exists("templates/admin.html"),
                 "student_html": os.path.exists("templates/student.html"),
@@ -1309,4 +1243,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
