@@ -618,101 +618,24 @@ except Exception as e:
 
 # ==================== FUNCIONES PARA SERVIR HTML ====================
 
-def get_html_content(filename: str) -> str:
-    """Lee contenido HTML de forma segura"""
-    try:
-        # Buscar en templates/
-        template_path = os.path.join("templates", filename)
-        if os.path.exists(template_path):
-            with open(template_path, "r", encoding="utf-8") as f:
-                content = f.read()
-                logger.info(f"✅ Archivo {filename} leído desde templates/")
-                return content
-        
-        # Buscar en raíz
-        if os.path.exists(filename):
-            with open(filename, "r", encoding="utf-8") as f:
-                content = f.read()
-                logger.info(f"✅ Archivo {filename} leído desde raíz")
-                return content
-        
-        # Archivo no encontrado
-        logger.warning(f"⚠️ Archivo {filename} no encontrado")
-        return create_error_page(filename)
-        
-    except Exception as e:
-        logger.error(f"❌ Error leyendo {filename}: {e}")
-        return create_error_page(filename, str(e))
-
-def create_error_page(filename: str, error: str = None) -> str:
-    """Crea página de error personalizada"""
-    return f"""
-    <!DOCTYPE html>
-    <html lang="es">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Página no encontrada - TESJI</title>
-        <style>
-            body {{ 
-                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
-                min-height: 100vh; 
-                color: white; 
-                display: flex; 
-                align-items: center; 
-                justify-content: center;
-                margin: 0;
-            }}
-            .container {{ 
-                max-width: 600px; 
-                text-align: center; 
-                padding: 40px 30px; 
-                background: rgba(255,255,255,0.1); 
-                border-radius: 20px; 
-                backdrop-filter: blur(10px); 
-                box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-            }}
-            .error {{ color: #ff6b6b; font-size: 4em; margin-bottom: 20px; }}
-            h1 {{ margin-bottom: 20px; }}
-            .back-link {{ margin-top: 30px; }}
-            .back-link a {{ 
-                color: #74b9ff; 
-                text-decoration: none; 
-                padding: 10px 20px;
-                background: rgba(255,255,255,0.1);
-                border-radius: 10px;
-                display: inline-block;
-                transition: all 0.3s ease;
-            }}
-            .back-link a:hover {{
-                background: rgba(255,255,255,0.2);
-                transform: translateY(-2px);
-            }}
-            .error-details {{
-                background: rgba(255,255,255,0.1);
-                padding: 15px;
-                border-radius: 10px;
-                margin: 20px 0;
-                font-size: 0.9em;
-            }}
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <div class="error">📄</div>
-            <h1>Página no encontrada</h1>
-            <p>La página <strong>{filename}</strong> no está disponible en este momento.</p>
-            {f'<div class="error-details">Error: {error}</div>' if error else ''}
-            <div class="back-link">
-                <a href="/">← Volver al inicio</a>
-            </div>
-        </div>
-    </body>
-    </html>
-    """
-
 # ==================== RUTAS PARA PÁGINAS HTML ====================
+
+def get_file_path(filename: str) -> str:
+    """Obtiene la ruta completa del archivo"""
+    # Intentar en templates/ primero
+    template_path = os.path.join(os.getcwd(), "templates", filename)
+    if os.path.exists(template_path):
+        logger.info(f"✅ Archivo encontrado: {template_path}")
+        return template_path
+    
+    # Intentar en la raíz
+    root_path = os.path.join(os.getcwd(), filename)
+    if os.path.exists(root_path):
+        logger.info(f"✅ Archivo encontrado: {root_path}")
+        return root_path
+    
+    logger.error(f"❌ Archivo no encontrado: {filename}")
+    return None
 
 @app.get("/", response_class=HTMLResponse)
 async def read_root():
@@ -794,6 +717,14 @@ async def read_root():
                 margin: 20px 0;
                 font-size: 0.9em;
             }
+            .debug-info {
+                background: rgba(0,0,0,0.2);
+                padding: 15px;
+                border-radius: 10px;
+                margin: 20px 0;
+                font-size: 0.8em;
+                text-align: left;
+            }
         </style>
     </head>
     <body>
@@ -805,6 +736,15 @@ async def read_root():
                 <p>✅ Sistema desplegado en Render</p>
                 <p>🌐 Acceso desde cualquier dispositivo</p>
                 <p>🔒 HTTPS habilitado automáticamente</p>
+            </div>
+            
+            <div class="debug-info">
+                <p><strong>Debug Info:</strong></p>
+                <p>📁 Directorio actual: """ + os.getcwd() + """</p>
+                <p>📂 Templates existe: """ + str(os.path.exists("templates")) + """</p>
+                <p>📂 Static existe: """ + str(os.path.exists("static")) + """</p>
+                <p>📄 welcome.html: """ + str(os.path.exists("templates/welcome.html")) + """</p>
+                <p>📄 admin.html: """ + str(os.path.exists("templates/admin.html")) + """</p>
             </div>
             
             <div class="access-links">
@@ -826,6 +766,12 @@ async def read_root():
                     <div class="access-desc">Panel administrativo</div>
                 </a>
                 
+                <a href="/student.html" class="access-link">
+                    <span class="access-icon">👨‍🎓</span>
+                    <div class="access-title">Estudiantes</div>
+                    <div class="access-desc">Panel de estudiantes</div>
+                </a>
+                
                 <a href="/api/health" class="access-link">
                     <span class="access-icon">🔧</span>
                     <div class="access-title">Estado del Sistema</div>
@@ -837,35 +783,125 @@ async def read_root():
     </html>
     """)
 
-@app.get("/welcome.html", response_class=HTMLResponse)
+@app.get("/welcome.html")
 async def serve_welcome():
     """Página de bienvenida con lector RFID"""
-    content = get_html_content("welcome.html")
-    return HTMLResponse(content=content)
+    logger.info("🔍 Solicitando welcome.html")
+    file_path = get_file_path("welcome.html")
+    if file_path:
+        return FileResponse(file_path, media_type="text/html")
+    else:
+        return HTMLResponse("""
+        <h1>Error: welcome.html no encontrado</h1>
+        <p>Directorio actual: """ + os.getcwd() + """</p>
+        <p>Archivos en templates/: """ + str(os.listdir("templates") if os.path.exists("templates") else "No existe") + """</p>
+        <a href="/">← Volver</a>
+        """, status_code=404)
 
-@app.get("/admin.html", response_class=HTMLResponse)
+@app.get("/admin.html")
 async def serve_admin():
     """Panel de administración"""
-    content = get_html_content("admin.html")
-    return HTMLResponse(content=content)
+    logger.info("🔍 Solicitando admin.html")
+    file_path = get_file_path("admin.html")
+    if file_path:
+        return FileResponse(file_path, media_type="text/html")
+    else:
+        return HTMLResponse("""
+        <h1>Error: admin.html no encontrado</h1>
+        <p>Directorio actual: """ + os.getcwd() + """</p>
+        <p>Archivos en templates/: """ + str(os.listdir("templates") if os.path.exists("templates") else "No existe") + """</p>
+        <a href="/">← Volver</a>
+        """, status_code=404)
 
-@app.get("/teacher.html", response_class=HTMLResponse)
+@app.get("/teacher.html")
 async def serve_teacher():
     """Panel de maestros"""
-    content = get_html_content("enhanced-teacher.html")
-    return HTMLResponse(content=content)
+    logger.info("🔍 Solicitando teacher.html")
+    file_path = get_file_path("enhanced-teacher.html")
+    if file_path:
+        return FileResponse(file_path, media_type="text/html")
+    else:
+        return HTMLResponse("""
+        <h1>Error: enhanced-teacher.html no encontrado</h1>
+        <p>Directorio actual: """ + os.getcwd() + """</p>
+        <p>Archivos en templates/: """ + str(os.listdir("templates") if os.path.exists("templates") else "No existe") + """</p>
+        <a href="/">← Volver</a>
+        """, status_code=404)
 
-@app.get("/student.html", response_class=HTMLResponse)
+@app.get("/student.html")
 async def serve_student():
     """Panel de estudiantes"""
-    content = get_html_content("student.html")
-    return HTMLResponse(content=content)
+    logger.info("🔍 Solicitando student.html")
+    file_path = get_file_path("student.html")
+    if file_path:
+        return FileResponse(file_path, media_type="text/html")
+    else:
+        return HTMLResponse("""
+        <h1>Error: student.html no encontrado</h1>
+        <p>Directorio actual: """ + os.getcwd() + """</p>
+        <p>Archivos en templates/: """ + str(os.listdir("templates") if os.path.exists("templates") else "No existe") + """</p>
+        <a href="/">← Volver</a>
+        """, status_code=404)
 
-@app.get("/login-teacher.html", response_class=HTMLResponse)
+@app.get("/login-teacher.html")
 async def serve_teacher_login():
     """Página de login para maestros"""
-    content = get_html_content("login-teacher.html")
-    return HTMLResponse(content=content)
+    logger.info("🔍 Solicitando login-teacher.html")
+    file_path = get_file_path("login-teacher.html")
+    if file_path:
+        return FileResponse(file_path, media_type="text/html")
+    else:
+        return HTMLResponse("""
+        <h1>Error: login-teacher.html no encontrado</h1>
+        <p>Directorio actual: """ + os.getcwd() + """</p>
+        <p>Archivos en templates/: """ + str(os.listdir("templates") if os.path.exists("templates") else "No existe") + """</p>
+        <a href="/">← Volver</a>
+        """, status_code=404)
+
+@app.get("/enhanced-teacher.html")
+async def serve_enhanced_teacher():
+    """Panel de maestros mejorado"""
+    logger.info("🔍 Solicitando enhanced-teacher.html")
+    file_path = get_file_path("enhanced-teacher.html")
+    if file_path:
+        return FileResponse(file_path, media_type="text/html")
+    else:
+        return HTMLResponse("""
+        <h1>Error: enhanced-teacher.html no encontrado</h1>
+        <p>Directorio actual: """ + os.getcwd() + """</p>
+        <p>Archivos en templates/: """ + str(os.listdir("templates") if os.path.exists("templates") else "No existe") + """</p>
+        <a href="/">← Volver</a>
+        """, status_code=404)
+
+@app.get("/enhanced-welcome.html")
+async def serve_enhanced_welcome():
+    """Página de bienvenida mejorada"""
+    logger.info("🔍 Solicitando enhanced-welcome.html")
+    file_path = get_file_path("enhanced-welcome.html")
+    if file_path:
+        return FileResponse(file_path, media_type="text/html")
+    else:
+        return HTMLResponse("""
+        <h1>Error: enhanced-welcome.html no encontrado</h1>
+        <p>Directorio actual: """ + os.getcwd() + """</p>
+        <p>Archivos en templates/: """ + str(os.listdir("templates") if os.path.exists("templates") else "No existe") + """</p>
+        <a href="/">← Volver</a>
+        """, status_code=404)
+
+@app.get("/device-selector.html")
+async def serve_device_selector():
+    """Selector de dispositivos"""
+    logger.info("🔍 Solicitando device-selector.html")
+    file_path = get_file_path("device-selector.html")
+    if file_path:
+        return FileResponse(file_path, media_type="text/html")
+    else:
+        return HTMLResponse("""
+        <h1>Error: device-selector.html no encontrado</h1>
+        <p>Directorio actual: """ + os.getcwd() + """</p>
+        <p>Archivos en templates/: """ + str(os.listdir("templates") if os.path.exists("templates") else "No existe") + """</p>
+        <a href="/">← Volver</a>
+        """, status_code=404)
 
 # ==================== MIDDLEWARE ====================
 
@@ -1273,3 +1309,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
