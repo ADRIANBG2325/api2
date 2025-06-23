@@ -1,0 +1,1789 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Administrativo - TESJI</title>
+    <link rel="stylesheet" href="/static/admin.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-graduation-cap"></i> TESJI Admin</h2>
+            </div>
+            <ul class="sidebar-menu">
+                <li><a href="#dashboard" class="menu-item active" data-section="dashboard">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                </a></li>
+                <li><a href="#users" class="menu-item" data-section="users">
+                    <i class="fas fa-users"></i> Usuarios
+                </a></li>
+                <li><a href="#careers" class="menu-item" data-section="careers">
+                    <i class="fas fa-university"></i> Carreras
+                </a></li>
+                <li><a href="#subjects" class="menu-item" data-section="subjects">
+                    <i class="fas fa-book"></i> Materias
+                </a></li>
+                <li><a href="#groups" class="menu-item" data-section="groups">
+                    <i class="fas fa-users-cog"></i> Grupos
+                </a></li>
+                <li><a href="#attendance" class="menu-item" data-section="attendance">
+                    <i class="fas fa-calendar-check"></i> Asistencias
+                </a></li>
+                <li><a href="#schedules" class="menu-item" data-section="schedules">
+                    <i class="fas fa-clock"></i> Horarios
+                </a></li>
+                <li><a href="#reports" class="menu-item" data-section="reports">
+                    <i class="fas fa-chart-bar"></i> Reportes
+                </a></li>
+            </ul>
+            <div class="sidebar-footer">
+                <button class="logout-btn" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                </button>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="main-header">
+                <div class="header-left">
+                    <h1 id="page-title">Dashboard</h1>
+                </div>
+                <div class="header-right">
+                    <div class="user-info">
+                        <i class="fas fa-user-shield"></i>
+                        <span id="admin-name">Administrador</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dashboard Section -->
+            <section id="dashboard-section" class="content-section active">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-user-graduate"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="total-students">0</h3>
+                            <p>Estudiantes</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-chalkboard-teacher"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="total-teachers">0</h3>
+                            <p>Maestros</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-university"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="total-careers">0</h3>
+                            <p>Carreras</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="today-attendance">0</h3>
+                            <p>Asistencias Hoy</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="dashboard-card">
+                        <h3><i class="fas fa-clock"></i> Actividad Reciente</h3>
+                        <div id="recent-activity" class="activity-list">
+                            <p class="loading">Cargando actividad reciente...</p>
+                        </div>
+                    </div>
+                    <div class="dashboard-card">
+                        <h3><i class="fas fa-chart-pie"></i> Estudiantes por Carrera</h3>
+                        <div id="students-by-career" class="chart-container">
+                            <p class="loading">Cargando estadísticas...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-card">
+                    <h3><i class="fas fa-server"></i> Estado del Servidor</h3>
+                    <div id="server-status" class="server-info">
+                        <p class="loading">Cargando estado del servidor...</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Users Section -->
+            <section id="users-section" class="content-section">
+                <div class="section-header">
+                    <h2>Gestión de Usuarios</h2>
+                    <div class="section-actions">
+                        <button class="btn btn-primary" onclick="showCreateUserModal()">
+                            <i class="fas fa-plus"></i> Nuevo Usuario
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="filters">
+                    <select id="user-role-filter" onchange="filterUsers()">
+                        <option value="">Todos los roles</option>
+                        <option value="student">Estudiantes</option>
+                        <option value="teacher">Maestros</option>
+                        <option value="admin">Administradores</option>
+                    </select>
+                    <select id="user-career-filter" onchange="filterUsers()">
+                        <option value="">Todas las carreras</option>
+                    </select>
+                </div>
+
+                <div class="table-container">
+                    <table id="users-table" class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Matrícula</th>
+                                <th>Email</th>
+                                <th>Rol</th>
+                                <th>Carrera</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="8" class="loading">Cargando usuarios...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Careers Section -->
+            <section id="careers-section" class="content-section">
+                <div class="section-header">
+                    <h2>Gestión de Carreras</h2>
+                    <div class="section-actions">
+                        <button class="btn btn-primary" onclick="showCreateCareerModal()">
+                            <i class="fas fa-plus"></i> Nueva Carrera
+                        </button>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table id="careers-table" class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Código</th>
+                                <th>Semestres</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="6" class="loading">Cargando carreras...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Subjects Section -->
+            <section id="subjects-section" class="content-section">
+                <div class="section-header">
+                    <h2>Gestión de Materias</h2>
+                    <div class="section-actions">
+                        <button class="btn btn-primary" onclick="showCreateSubjectModal()">
+                            <i class="fas fa-plus"></i> Nueva Materia
+                        </button>
+                    </div>
+                </div>
+
+                <div class="filters">
+                    <select id="subject-career-filter" onchange="filterSubjects()">
+                        <option value="">Todas las carreras</option>
+                    </select>
+                    <select id="subject-semester-filter" onchange="filterSubjects()">
+                        <option value="">Todos los semestres</option>
+                        <option value="1">1er Semestre</option>
+                        <option value="2">2do Semestre</option>
+                        <option value="3">3er Semestre</option>
+                        <option value="4">4to Semestre</option>
+                        <option value="5">5to Semestre</option>
+                        <option value="6">6to Semestre</option>
+                        <option value="7">7mo Semestre</option>
+                        <option value="8">8vo Semestre</option>
+                        <option value="9">9no Semestre</option>
+                    </select>
+                </div>
+
+                <div class="table-container">
+                    <table id="subjects-table" class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Código</th>
+                                <th>Carrera</th>
+                                <th>Semestre</th>
+                                <th>Créditos</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="7" class="loading">Cargando materias...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Groups Section -->
+            <section id="groups-section" class="content-section">
+                <div class="section-header">
+                    <h2>Gestión de Grupos</h2>
+                    <div class="section-actions">
+                        <button class="btn btn-primary" onclick="showCreateGroupModal()">
+                            <i class="fas fa-plus"></i> Nuevo Grupo
+                        </button>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table id="groups-table" class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Salón</th>
+                                <th>Carrera</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="5" class="loading">Cargando grupos...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Attendance Section -->
+            <section id="attendance-section" class="content-section">
+                <div class="section-header">
+                    <h2>Registro de Asistencias</h2>
+                    <div class="section-actions">
+                        <button class="btn btn-primary" onclick="showManualAttendanceModal()">
+                            <i class="fas fa-user-check"></i> Registrar Asistencia Manual
+                        </button>
+                    </div>
+                </div>
+
+                <div class="filters">
+                    <input type="date" id="attendance-date-filter" onchange="filterAttendance()">
+                    <select id="attendance-career-filter" onchange="filterAttendance()">
+                        <option value="">Todas las carreras</option>
+                    </select>
+                    <select id="attendance-subject-filter" onchange="filterAttendance()">
+                        <option value="">Todas las materias</option>
+                    </select>
+                </div>
+
+                <div class="table-container">
+                    <table id="attendance-table" class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Fecha</th>
+                                <th>Estudiante</th>
+                                <th>Materia</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="6" class="loading">Cargando asistencias...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Schedules Section -->
+            <section id="schedules-section" class="content-section">
+                <div class="section-header">
+                    <h2>Gestión de Horarios</h2>
+                    <div class="section-actions">
+                        <button class="btn btn-primary" onclick="showCreateScheduleModal()">
+                            <i class="fas fa-plus"></i> Nuevo Horario
+                        </button>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table id="schedules-table" class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Materia</th>
+                                <th>Grupo</th>
+                                <th>Día</th>
+                                <th>Hora Inicio</th>
+                                <th>Hora Fin</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="7" class="loading">Cargando horarios...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Reports Section -->
+            <section id="reports-section" class="content-section">
+                <div class="section-header">
+                    <h2>Generación de Reportes</h2>
+                    <div class="section-actions">
+                        <button class="btn btn-primary" onclick="exportAllData()">
+                            <i class="fas fa-download"></i> Exportar Todo
+                        </button>
+                    </div>
+                </div>
+
+                <div class="reports-grid">
+                    <div class="report-card">
+                        <div class="report-icon">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <h3>Reporte de Asistencias</h3>
+                        <p>Genera reportes detallados de asistencias por fecha, estudiante o materia.</p>
+                        <div class="report-filters">
+                            <select id="attendance-report-period">
+                                <option value="today">Hoy</option>
+                                <option value="week">Esta Semana</option>
+                                <option value="month">Este Mes</option>
+                                <option value="custom">Personalizado</option>
+                            </select>
+                            <input type="date" id="attendance-start-date" style="display: none;">
+                            <input type="date" id="attendance-end-date" style="display: none;">
+                        </div>
+                        <div class="report-actions">
+                            <button class="btn btn-success" onclick="generateAttendanceReport()">
+                                <i class="fas fa-file-excel"></i> Excel
+                            </button>
+                            <button class="btn btn-danger" onclick="generateAttendancePDF()">
+                                <i class="fas fa-file-pdf"></i> PDF
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="report-card">
+                        <div class="report-icon">
+                            <i class="fas fa-user-graduate"></i>
+                        </div>
+                        <h3>Reporte de Estudiantes</h3>
+                        <p>Lista completa de estudiantes con información académica y de contacto.</p>
+                        <div class="report-filters">
+                            <select id="student-report-career">
+                                <option value="all">Todas las Carreras</option>
+                            </select>
+                            <select id="student-report-semester">
+                                <option value="all">Todos los Semestres</option>
+                                <option value="1">1er Semestre</option>
+                                <option value="2">2do Semestre</option>
+                                <option value="3">3er Semestre</option>
+                                <option value="4">4to Semestre</option>
+                                <option value="5">5to Semestre</option>
+                                <option value="6">6to Semestre</option>
+                            </select>
+                        </div>
+                        <div class="report-actions">
+                            <button class="btn btn-success" onclick="generateStudentReport()">
+                                <i class="fas fa-file-excel"></i> Excel
+                            </button>
+                            <button class="btn btn-danger" onclick="generateStudentPDF()">
+                                <i class="fas fa-file-pdf"></i> PDF
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="report-card">
+                        <div class="report-icon">
+                            <i class="fas fa-university"></i>
+                        </div>
+                        <h3>Reporte de Carreras</h3>
+                        <p>Estadísticas y información detallada de todas las carreras disponibles.</p>
+                        <div class="report-filters">
+                            <select id="career-report-status">
+                                <option value="all">Todas</option>
+                                <option value="active">Activas</option>
+                                <option value="inactive">Inactivas</option>
+                            </select>
+                        </div>
+                        <div class="report-actions">
+                            <button class="btn btn-success" onclick="generateCareerReport()">
+                                <i class="fas fa-file-excel"></i> Excel
+                            </button>
+                            <button class="btn btn-danger" onclick="generateCareerPDF()">
+                                <i class="fas fa-file-pdf"></i> PDF
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="report-card">
+                        <div class="report-icon">
+                            <i class="fas fa-chart-bar"></i>
+                        </div>
+                        <h3>Estadísticas Generales</h3>
+                        <p>Resumen estadístico completo del sistema con gráficos y métricas.</p>
+                        <div class="report-filters">
+                            <select id="stats-report-period">
+                                <option value="month">Último Mes</option>
+                                <option value="semester">Semestre Actual</option>
+                                <option value="year">Año Académico</option>
+                            </select>
+                        </div>
+                        <div class="report-actions">
+                            <button class="btn btn-info" onclick="generateStatsReport()">
+                                <i class="fas fa-chart-line"></i> Ver Estadísticas
+                            </button>
+                            <button class="btn btn-danger" onclick="generateStatsPDF()">
+                                <i class="fas fa-file-pdf"></i> PDF
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="report-preview" id="report-preview" style="display: none;">
+                    <div class="preview-header">
+                        <h3><i class="fas fa-eye"></i> Vista Previa del Reporte</h3>
+                        <button class="btn btn-outline" onclick="closeReportPreview()">
+                            <i class="fas fa-times"></i> Cerrar
+                        </button>
+                    </div>
+                    <div class="preview-content" id="preview-content">
+                        <!-- Aquí se mostrará la vista previa -->
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <!-- Create User Modal -->
+    <div id="createUserModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-user-plus"></i> Crear Nuevo Usuario</h2>
+                <span class="close" onclick="closeModal('createUserModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="createUserForm">
+                    <div class="form-group">
+                        <label for="name">Nombre:</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="matricula">Matrícula:</label>
+                        <input type="text" id="matricula" name="matricula" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email:</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Contraseña:</label>
+                        <input type="password" id="password" name="password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="role">Rol:</label>
+                        <select id="role" name="role" required>
+                            <option value="student">Estudiante</option>
+                            <option value="teacher">Maestro</option>
+                            <option value="admin">Administrador</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="career">Carrera:</label>
+                        <select id="career" name="career">
+                            <option value="">Seleccionar Carrera</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> Crear Usuario</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Career Modal -->
+    <div id="createCareerModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-university"></i> Crear Nueva Carrera</h2>
+                <span class="close" onclick="closeModal('createCareerModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="createCareerForm">
+                    <div class="form-group">
+                        <label for="careerName">Nombre:</label>
+                        <input type="text" id="careerName" name="careerName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="careerCode">Código:</label>
+                        <input type="text" id="careerCode" name="careerCode" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="semesters">Semestres:</label>
+                        <input type="number" id="semesters" name="semesters" required min="1" max="12">
+                    </div>
+                    <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> Crear Carrera</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Subject Modal -->
+    <div id="createSubjectModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-book"></i> Crear Nueva Materia</h2>
+                <span class="close" onclick="closeModal('createSubjectModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="createSubjectForm">
+                    <div class="form-group">
+                        <label for="subjectName">Nombre:</label>
+                        <input type="text" id="subjectName" name="subjectName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="subjectCode">Código:</label>
+                        <input type="text" id="subjectCode" name="subjectCode">
+                    </div>
+                    <div class="form-group">
+                        <label for="careerSelect">Carrera:</label>
+                        <select id="careerSelect" name="careerSelect" required>
+                            <option value="">Seleccionar Carrera</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="semesterSelect">Semestre:</label>
+                        <select id="semesterSelect" name="semesterSelect" required>
+                            <option value="">Seleccionar Semestre</option>
+                            <option value="1">1er Semestre</option>
+                            <option value="2">2do Semestre</option>
+                            <option value="3">3er Semestre</option>
+                            <option value="4">4to Semestre</option>
+                            <option value="5">5to Semestre</option>
+                            <option value="6">6to Semestre</option>
+                            <option value="7">7mo Semestre</option>
+                            <option value="8">8vo Semestre</option>
+                            <option value="9">9no Semestre</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="credits">Créditos:</label>
+                        <input type="number" id="credits" name="credits" required min="1" max="10">
+                    </div>
+                    <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> Crear Materia</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Group Modal -->
+    <div id="createGroupModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-users-cog"></i> Crear Nuevo Grupo</h2>
+                <span class="close" onclick="closeModal('createGroupModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="createGroupForm">
+                    <div class="form-group">
+                        <label for="groupName">Nombre:</label>
+                        <input type="text" id="groupName" name="groupName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="classroom">Salón:</label>
+                        <input type="text" id="classroom" name="classroom" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="careerGroupSelect">Carrera:</label>
+                        <select id="careerGroupSelect" name="careerGroupSelect" required>
+                            <option value="">Seleccionar Carrera</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> Crear Grupo</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Manual Attendance Modal -->
+    <div id="manualAttendanceModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-user-check"></i> Registrar Asistencia Manual</h2>
+                <span class="close" onclick="closeModal('manualAttendanceModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="manualAttendanceForm">
+                    <div class="form-group">
+                        <label for="attendanceDate">Fecha:</label>
+                        <input type="date" id="attendanceDate" name="attendanceDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="studentSelect">Estudiante:</label>
+                        <select id="studentSelect" name="studentSelect" required>
+                            <option value="">Seleccionar Estudiante</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="subjectSelect">Materia:</label>
+                        <select id="subjectSelect" name="subjectSelect" required>
+                            <option value="">Seleccionar Materia</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="attendanceStatus">Estado:</label>
+                        <select id="attendanceStatus" name="attendanceStatus" required>
+                            <option value="present">Presente</option>
+                            <option value="absent">Ausente</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-success"><i class="fas fa-check"></i> Registrar Asistencia</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Schedule Modal -->
+    <div id="createScheduleModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-clock"></i> Crear Nuevo Horario</h2>
+                <span class="close" onclick="closeModal('createScheduleModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="createScheduleForm">
+                    <div class="form-group">
+                        <label for="subjectScheduleSelect">Materia:</label>
+                        <select id="subjectScheduleSelect" name="subjectScheduleSelect" required>
+                            <option value="">Seleccionar Materia</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="groupScheduleSelect">Grupo:</label>
+                        <select id="groupScheduleSelect" name="groupScheduleSelect" required>
+                            <option value="">Seleccionar Grupo</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="dayOfWeek">Día de la Semana:</label>
+                        <select id="dayOfWeek" name="dayOfWeek" required>
+                            <option value="Lunes">Lunes</option>
+                            <option value="Martes">Martes</option>
+                            <option value="Miércoles">Miércoles</option>
+                            <option value="Jueves">Jueves</option>
+                            <option value="Viernes">Viernes</option>
+                            <option value="Sábado">Sábado</option>
+                            <option value="Domingo">Domingo</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="startTime">Hora de Inicio:</label>
+                        <input type="time" id="startTime" name="startTime" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="endTime">Hora de Fin:</label>
+                        <input type="time" id="endTime" name="endTime" required>
+                    </div>
+                    <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> Crear Horario</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let users = [];
+        let careers = [];
+        let subjects = [];
+        let groups = [];
+        let attendanceRecords = [];
+        let schedules = [];
+
+        // Helper function to fetch data
+        async function fetchData(url, options = {}) {
+            try {
+                const response = await fetch(url, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...options.headers
+                    },
+                    ...options
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return await response.json();
+            } catch (error) {
+                console.error('Fetching error:', error);
+                displayMessage('Error de conexión. Revisa la consola para más detalles.', 'error');
+                return null;
+            }
+        }
+
+        // Helper function to display messages
+        function displayMessage(message, type = 'info') {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `alert alert-${type}`;
+            messageDiv.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 15px 20px;
+                border-radius: 8px;
+                color: white;
+                font-weight: 600;
+                z-index: 10000;
+                max-width: 400px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                ${type === 'success' ? 'background: #22c55e;' : ''}
+                ${type === 'error' ? 'background: #ef4444;' : ''}
+                ${type === 'info' ? 'background: #3b82f6;' : ''}
+            `;
+            messageDiv.textContent = message;
+            
+            document.body.appendChild(messageDiv);
+            
+            setTimeout(() => {
+                if (messageDiv.parentNode) {
+                    messageDiv.parentNode.removeChild(messageDiv);
+                }
+            }, 5000);
+        }
+
+        // Function to close modals
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // Function to logout
+        function logout() {
+            if (confirm('¿Está seguro que desea cerrar sesión?')) {
+                localStorage.removeItem('admin_token');
+                window.location.href = '/';
+            }
+        }
+
+        // Function to switch sections
+        function switchSection(sectionId) {
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(section => section.classList.remove('active'));
+
+            const menuItems = document.querySelectorAll('.menu-item');
+            menuItems.forEach(item => item.classList.remove('active'));
+
+            document.getElementById(sectionId + '-section').classList.add('active');
+            document.querySelector(`.menu-item[data-section="${sectionId}"]`).classList.add('active');
+            document.getElementById('page-title').textContent = sectionId.charAt(0).toUpperCase() + sectionId.slice(1);
+        }
+
+        // Event listeners for menu items
+        document.querySelectorAll('.menu-item').forEach(item => {
+            item.addEventListener('click', function(event) {
+                event.preventDefault();
+                const section = this.getAttribute('data-section');
+                switchSection(section);
+                
+                // Cargar datos específicos de la sección
+                switch(section) {
+                    case 'users':
+                        loadUsers();
+                        break;
+                    case 'careers':
+                        loadCareers();
+                        break;
+                    case 'subjects':
+                        loadSubjects();
+                        break;
+                    case 'groups':
+                        loadGroups();
+                        break;
+                    case 'attendance':
+                        loadAttendance();
+                        break;
+                    case 'schedules':
+                        loadSchedules();
+                        break;
+                }
+            });
+        });
+
+        // Dashboard functions
+        async function loadDashboardStats() {
+            const stats = await fetchData('/api/admin/dashboard-stats');
+            if (stats && stats.success !== false) {
+                document.getElementById('total-students').textContent = stats.totalStudents || 0;
+                document.getElementById('total-teachers').textContent = stats.totalTeachers || 0;
+                document.getElementById('total-careers').textContent = stats.totalCareers || 0;
+                document.getElementById('today-attendance').textContent = stats.todayAttendance || 0;
+            }
+        }
+
+        async function loadRecentActivity() {
+            const activity = await fetchData('/api/admin/recent-activity');
+            const activityList = document.getElementById('recent-activity');
+            activityList.innerHTML = '';
+
+            if (activity && activity.length > 0) {
+                activity.forEach(item => {
+                    const activityItem = document.createElement('div');
+                    activityItem.className = 'activity-item';
+                    activityItem.innerHTML = `
+                        <div class="activity-message">${item.message}</div>
+                        <div class="activity-time">${new Date(item.timestamp).toLocaleString()}</div>
+                    `;
+                    activityList.appendChild(activityItem);
+                });
+            } else {
+                activityList.innerHTML = '<p>No hay actividad reciente.</p>';
+            }
+        }
+
+        async function loadStudentsByCareerChart() {
+            const chartData = await fetchData('/api/admin/students-by-career');
+            const chartContainer = document.getElementById('students-by-career');
+            chartContainer.innerHTML = '';
+
+            if (chartData && chartData.length > 0) {
+                const maxCount = Math.max(...chartData.map(item => item.count));
+                
+                chartData.forEach(item => {
+                    const barContainer = document.createElement('div');
+                    barContainer.className = 'chart-bar-container';
+                    barContainer.style.cssText = 'margin-bottom: 10px; display: flex; align-items: center;';
+                    
+                    const label = document.createElement('div');
+                    label.style.cssText = 'width: 200px; font-size: 0.9em; margin-right: 10px;';
+                    label.textContent = item.career;
+                    
+                    const barWrapper = document.createElement('div');
+                    barWrapper.style.cssText = 'flex: 1; background: #f3f4f6; border-radius: 4px; height: 20px; position: relative;';
+                    
+                    const bar = document.createElement('div');
+                    bar.style.cssText = `
+                        background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+                        height: 100%;
+                        border-radius: 4px;
+                        width: ${(item.count / maxCount) * 100}%;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        color: white;
+                        font-weight: 600;
+                        font-size: 0.8em;
+                    `;
+                    bar.textContent = item.count;
+                    
+                    barWrapper.appendChild(bar);
+                    barContainer.appendChild(label);
+                    barContainer.appendChild(barWrapper);
+                    chartContainer.appendChild(barContainer);
+                });
+            } else {
+                chartContainer.innerHTML = '<p>No hay datos para mostrar.</p>';
+            }
+        }
+
+        async function loadServerStatus() {
+            const status = await fetchData('/api/admin/server-status');
+            const serverStatusDiv = document.getElementById('server-status');
+            serverStatusDiv.innerHTML = '';
+
+            if (status && status.status) {
+                const statusGrid = document.createElement('div');
+                statusGrid.style.cssText = 'display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;';
+                
+                const statusItems = [
+                    { label: 'Estado', value: status.status, color: status.status === 'online' ? '#22c55e' : '#ef4444' },
+                    { label: 'Tiempo activo', value: status.uptime || 'N/A', color: '#3b82f6' },
+                    { label: 'Red', value: status.network || 'N/A', color: '#8b5cf6' },
+                    { label: 'IP', value: status.ip || 'N/A', color: '#06b6d4' },
+                    { label: 'Solicitudes RFID', value: status.rfid_requests || 0, color: '#f59e0b' },
+                    { label: 'Reconocimientos', value: status.successful_recognitions || 0, color: '#10b981' }
+                ];
+                
+                statusItems.forEach(item => {
+                    const statusCard = document.createElement('div');
+                    statusCard.style.cssText = `
+                        background: rgba(255,255,255,0.1);
+                        padding: 15px;
+                        border-radius: 8px;
+                        border-left: 4px solid ${item.color};
+                    `;
+                    statusCard.innerHTML = `
+                        <div style="font-size: 0.9em; color: #666; margin-bottom: 5px;">${item.label}</div>
+                        <div style="font-size: 1.2em; font-weight: 600; color: ${item.color};">${item.value}</div>
+                    `;
+                    statusGrid.appendChild(statusCard);
+                });
+                
+                serverStatusDiv.appendChild(statusGrid);
+            } else {
+                serverStatusDiv.innerHTML = '<p>No se pudo obtener el estado del servidor.</p>';
+            }
+        }
+
+        // Users functions
+        async function loadUsers() {
+            users = await fetchData('/api/admin/users');
+            if (users) {
+                populateUsersTable(users);
+                populateCareerFilter();
+            }
+        }
+
+        function populateUsersTable(usersData) {
+            const usersTableBody = document.querySelector('#users-table tbody');
+            usersTableBody.innerHTML = '';
+
+            if (!usersData || usersData.length === 0) {
+                usersTableBody.innerHTML = '<tr><td colspan="8">No hay usuarios registrados.</td></tr>';
+                return;
+            }
+
+            usersData.forEach(user => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${user.id}</td>
+                    <td>${user.name}</td>
+                    <td>${user.matricula}</td>
+                    <td>${user.email || 'N/A'}</td>
+                    <td><span class="badge badge-${user.role}">${user.role}</span></td>
+                    <td>${user.career || 'N/A'}</td>
+                    <td><span class="badge badge-${user.status === 'Activo' ? 'success' : 'danger'}">${user.status}</span></td>
+                    <td>
+                        <button class="btn btn-warning btn-small" onclick="editUser(${user.id})" title="Editar">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-danger btn-small" onclick="deleteUser(${user.id})" title="Eliminar">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                usersTableBody.appendChild(row);
+            });
+        }
+
+        function populateCareerFilter() {
+            const careerFilter = document.getElementById('user-career-filter');
+            if (careerFilter) {
+                careerFilter.innerHTML = '<option value="">Todas las carreras</option>';
+                careers.forEach(career => {
+                    const option = document.createElement('option');
+                    option.value = career.name;
+                    option.textContent = career.name;
+                    careerFilter.appendChild(option);
+                });
+            }
+        }
+
+        function filterUsers() {
+            const roleFilter = document.getElementById('user-role-filter').value;
+            const careerFilter = document.getElementById('user-career-filter').value;
+
+            let filteredUsers = users;
+
+            if (roleFilter) {
+                filteredUsers = filteredUsers.filter(user => user.role === roleFilter);
+            }
+
+            if (careerFilter) {
+                filteredUsers = filteredUsers.filter(user => user.career === careerFilter);
+            }
+
+            populateUsersTable(filteredUsers);
+        }
+
+        function showCreateUserModal() {
+            const modal = document.getElementById('createUserModal');
+            modal.style.display = 'block';
+
+            // Populate career options
+            const careerSelect = document.getElementById('career');
+            careerSelect.innerHTML = '<option value="">Seleccionar Carrera</option>';
+            careers.forEach(career => {
+                const option = document.createElement('option');
+                option.value = career.id;
+                option.textContent = career.name;
+                careerSelect.appendChild(option);
+            });
+        }
+
+        // Handle create user form
+        document.getElementById('createUserForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const userData = {
+                name: formData.get('name'),
+                matricula: formData.get('matricula'),
+                email: formData.get('email'),
+                password: formData.get('password'),
+                role: formData.get('role'),
+                career: formData.get('career') || null
+            };
+            
+            const result = await fetchData('/api/admin/users', {
+                method: 'POST',
+                body: JSON.stringify(userData)
+            });
+            
+            if (result && result.success) {
+                displayMessage('Usuario creado exitosamente', 'success');
+                closeModal('createUserModal');
+                loadUsers();
+                e.target.reset();
+            } else {
+                displayMessage(result?.message || 'Error creando usuario', 'error');
+            }
+        });
+
+        async function deleteUser(userId) {
+            if (confirm('¿Está seguro que desea eliminar este usuario?')) {
+                const result = await fetchData(`/api/admin/users/${userId}`, {
+                    method: 'DELETE'
+                });
+                
+                if (result && result.success) {
+                    displayMessage('Usuario eliminado exitosamente', 'success');
+                    loadUsers();
+                } else {
+                    displayMessage(result?.message || 'Error eliminando usuario', 'error');
+                }
+            }
+        }
+
+        function editUser(userId) {
+            const user = users.find(u => u.id === userId);
+            if (user) {
+                // Implementar modal de edición
+                displayMessage('Función de edición en desarrollo', 'info');
+            }
+        }
+
+        // Careers functions
+        async function loadCareers() {
+            careers = await fetchData('/api/admin/careers');
+            if (careers) {
+                populateCareersTable(careers);
+                populateCareerSelects();
+            }
+        }
+
+        function populateCareersTable(careersData) {
+            const careersTableBody = document.querySelector('#careers-table tbody');
+            careersTableBody.innerHTML = '';
+
+            if (!careersData || careersData.length === 0) {
+                careersTableBody.innerHTML = '<tr><td colspan="6">No hay carreras registradas.</td></tr>';
+                return;
+            }
+
+            careersData.forEach(career => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${career.id}</td>
+                    <td>${career.name}</td>
+                    <td>${career.code}</td>
+                    <td>${career.semesters}</td>
+                    <td><span class="badge badge-${career.status === 'Activa' ? 'success' : 'danger'}">${career.status}</span></td>
+                    <td>
+                        <button class="btn btn-warning btn-small" onclick="editCareer(${career.id})" title="Editar">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-danger btn-small" onclick="deleteCareer(${career.id})" title="Eliminar">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                careersTableBody.appendChild(row);
+            });
+        }
+
+        function populateCareerSelects() {
+            const careerSelects = document.querySelectorAll('select[id*="career"], select[id*="Career"]');
+            careerSelects.forEach(select => {
+                if (select.id === 'user-career-filter') return;
+
+                select.innerHTML = '<option value="">Seleccionar Carrera</option>';
+                careers.forEach(career => {
+                    const option = document.createElement('option');
+                    option.value = career.id;
+                    option.textContent = career.name;
+                    select.appendChild(option);
+                });
+            });
+        }
+
+        function showCreateCareerModal() {
+            document.getElementById('createCareerModal').style.display = 'block';
+        }
+
+        // Handle create career form
+        document.getElementById('createCareerForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const careerData = {
+                name: formData.get('careerName'),
+                code: formData.get('careerCode'),
+                semesters: parseInt(formData.get('semesters'))
+            };
+            
+            const result = await fetchData('/api/admin/careers', {
+                method: 'POST',
+                body: JSON.stringify(careerData)
+            });
+            
+            if (result && result.success) {
+                displayMessage('Carrera creada exitosamente', 'success');
+                closeModal('createCareerModal');
+                loadCareers();
+                e.target.reset();
+            } else {
+                displayMessage(result?.message || 'Error creando carrera', 'error');
+            }
+        });
+
+        function editCareer(careerId) {
+            displayMessage('Función de edición en desarrollo', 'info');
+        }
+
+        function deleteCareer(careerId) {
+            displayMessage('Función de eliminación en desarrollo', 'info');
+        }
+
+        // Subjects functions
+        async function loadSubjects() {
+            subjects = await fetchData('/api/admin/subjects');
+            if (subjects) {
+                populateSubjectsTable(subjects);
+                populateSubjectFilters();
+            }
+        }
+
+        function populateSubjectsTable(subjectsData) {
+            const subjectsTableBody = document.querySelector('#subjects-table tbody');
+            subjectsTableBody.innerHTML = '';
+
+            if (!subjectsData || subjectsData.length === 0) {
+                subjectsTableBody.innerHTML = '<tr><td colspan="7">No hay materias registradas.</td></tr>';
+                return;
+            }
+
+            subjectsData.forEach(subject => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${subject.id}</td>
+                    <td>${subject.name}</td>
+                    <td>${subject.code || 'N/A'}</td>
+                    <td>${subject.career}</td>
+                    <td>${subject.semester}</td>
+                    <td>${subject.credits}</td>
+                    <td>
+                        <button class="btn btn-warning btn-small" onclick="editSubject(${subject.id})" title="Editar">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-danger btn-small" onclick="deleteSubject(${subject.id})" title="Eliminar">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                subjectsTableBody.appendChild(row);
+            });
+        }
+
+        function populateSubjectFilters() {
+            const careerFilter = document.getElementById('subject-career-filter');
+            if (careerFilter) {
+                careerFilter.innerHTML = '<option value="">Todas las carreras</option>';
+                careers.forEach(career => {
+                    const option = document.createElement('option');
+                    option.value = career.name;
+                    option.textContent = career.name;
+                    careerFilter.appendChild(option);
+                });
+            }
+        }
+
+        function filterSubjects() {
+            const careerFilter = document.getElementById('subject-career-filter').value;
+            const semesterFilter = document.getElementById('subject-semester-filter').value;
+
+            let filteredSubjects = subjects;
+
+            if (careerFilter) {
+                filteredSubjects = filteredSubjects.filter(subject => subject.career === careerFilter);
+            }
+
+            if (semesterFilter) {
+                filteredSubjects = filteredSubjects.filter(subject => subject.semester == semesterFilter);
+            }
+
+            populateSubjectsTable(filteredSubjects);
+        }
+
+        function showCreateSubjectModal() {
+            document.getElementById('createSubjectModal').style.display = 'block';
+            populateCareerSelects();
+        }
+
+        // Handle create subject form
+        document.getElementById('createSubjectForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const subjectData = {
+                name: formData.get('subjectName'),
+                code: formData.get('subjectCode'),
+                career: parseInt(formData.get('careerSelect')),
+                semester: parseInt(formData.get('semesterSelect')),
+                credits: parseInt(formData.get('credits'))
+            };
+            
+            const result = await fetchData('/api/admin/subjects', {
+                method: 'POST',
+                body: JSON.stringify(subjectData)
+            });
+            
+            if (result && result.success) {
+                displayMessage('Materia creada exitosamente', 'success');
+                closeModal('createSubjectModal');
+                loadSubjects();
+                e.target.reset();
+            } else {
+                displayMessage(result?.message || 'Error creando materia', 'error');
+            }
+        });
+
+        function editSubject(subjectId) {
+            displayMessage('Función de edición en desarrollo', 'info');
+        }
+
+        function deleteSubject(subjectId) {
+            displayMessage('Función de eliminación en desarrollo', 'info');
+        }
+
+        // Groups functions
+        async function loadGroups() {
+            groups = await fetchData('/api/admin/groups');
+            if (groups) {
+                populateGroupsTable(groups);
+            }
+        }
+
+        function populateGroupsTable(groupsData) {
+            const groupsTableBody = document.querySelector('#groups-table tbody');
+            groupsTableBody.innerHTML = '';
+
+            if (!groupsData || groupsData.length === 0) {
+                groupsTableBody.innerHTML = '<tr><td colspan="5">No hay grupos registrados.</td></tr>';
+                return;
+            }
+
+            groupsData.forEach(group => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${group.id}</td>
+                    <td>${group.name}</td>
+                    <td>${group.classroom}</td>
+                    <td>${group.career}</td>
+                    <td>
+                        <button class="btn btn-warning btn-small" onclick="editGroup(${group.id})" title="Editar">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-danger btn-small" onclick="deleteGroup(${group.id})" title="Eliminar">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                groupsTableBody.appendChild(row);
+            });
+        }
+
+        function showCreateGroupModal() {
+            document.getElementById('createGroupModal').style.display = 'block';
+            populateCareerSelects();
+        }
+
+        // Handle create group form
+        document.getElementById('createGroupForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const groupData = {
+                name: formData.get('groupName'),
+                classroom: formData.get('classroom'),
+                career: parseInt(formData.get('careerGroupSelect'))
+            };
+            
+            const result = await fetchData('/api/admin/groups', {
+                method: 'POST',
+                body: JSON.stringify(groupData)
+            });
+            
+            if (result && result.success) {
+                displayMessage('Grupo creado exitosamente', 'success');
+                closeModal('createGroupModal');
+                loadGroups();
+                e.target.reset();
+            } else {
+                displayMessage(result?.message || 'Error creando grupo', 'error');
+            }
+        });
+
+        function editGroup(groupId) {
+            displayMessage('Función de edición en desarrollo', 'info');
+        }
+
+        function deleteGroup(groupId) {
+            displayMessage('Función de eliminación en desarrollo', 'info');
+        }
+
+        // Attendance functions
+        async function loadAttendance() {
+            attendanceRecords = await fetchData('/api/admin/attendance');
+            if (attendanceRecords) {
+                populateAttendanceTable(attendanceRecords);
+                populateAttendanceFilters();
+            }
+        }
+
+        function populateAttendanceTable(attendanceData) {
+            const attendanceTableBody = document.querySelector('#attendance-table tbody');
+            attendanceTableBody.innerHTML = '';
+
+            if (!attendanceData || attendanceData.length === 0) {
+                attendanceTableBody.innerHTML = '<tr><td colspan="6">No hay registros de asistencia.</td></tr>';
+                return;
+            }
+
+            attendanceData.forEach(record => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${record.id}</td>
+                    <td>${record.date}</td>
+                    <td>${record.student}</td>
+                    <td>${record.subject}</td>
+                    <td><span class="badge badge-${record.status === 'Presente' ? 'success' : 'danger'}">${record.status}</span></td>
+                    <td>
+                        <button class="btn btn-warning btn-small" onclick="editAttendance(${record.id})" title="Editar">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-danger btn-small" onclick="deleteAttendance(${record.id})" title="Eliminar">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                attendanceTableBody.appendChild(row);
+            });
+        }
+
+        function populateAttendanceFilters() {
+            // Set today's date as default
+            const today = new Date().toISOString().split('T')[0];
+            const dateFilter = document.getElementById('attendance-date-filter');
+            if (dateFilter) {
+                dateFilter.value = today;
+            }
+        }
+
+        function filterAttendance() {
+            // Implementar filtros de asistencia
+            displayMessage('Filtros de asistencia en desarrollo', 'info');
+        }
+
+        function showManualAttendanceModal() {
+            document.getElementById('manualAttendanceModal').style.display = 'block';
+            
+            // Set today's date
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('attendanceDate').value = today;
+            
+            // Populate students
+            const studentSelect = document.getElementById('studentSelect');
+            studentSelect.innerHTML = '<option value="">Seleccionar Estudiante</option>';
+            users.filter(user => user.role === 'student').forEach(student => {
+                const option = document.createElement('option');
+                option.value = student.id;
+                option.textContent = `${student.name} (${student.matricula})`;
+                studentSelect.appendChild(option);
+            });
+            
+            // Populate subjects
+            const subjectSelect = document.getElementById('subjectSelect');
+            subjectSelect.innerHTML = '<option value="">Seleccionar Materia</option>';
+            subjects.forEach(subject => {
+                const option = document.createElement('option');
+                option.value = subject.id;
+                option.textContent = subject.name;
+                subjectSelect.appendChild(option);
+            });
+        }
+
+        // Handle manual attendance form
+        document.getElementById('manualAttendanceForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const attendanceData = {
+                date: formData.get('attendanceDate'),
+                student: parseInt(formData.get('studentSelect')),
+                subject: parseInt(formData.get('subjectSelect')),
+                status: formData.get('attendanceStatus')
+            };
+            
+            const result = await fetchData('/api/admin/attendance', {
+                method: 'POST',
+                body: JSON.stringify(attendanceData)
+            });
+            
+            if (result && result.success) {
+                displayMessage('Asistencia registrada exitosamente', 'success');
+                closeModal('manualAttendanceModal');
+                loadAttendance();
+                e.target.reset();
+            } else {
+                displayMessage(result?.message || 'Error registrando asistencia', 'error');
+            }
+        });
+
+        function editAttendance(attendanceId) {
+            displayMessage('Función de edición en desarrollo', 'info');
+        }
+
+        function deleteAttendance(attendanceId) {
+            displayMessage('Función de eliminación en desarrollo', 'info');
+        }
+
+        // Schedules functions
+        async function loadSchedules() {
+            schedules = await fetchData('/api/admin/schedules');
+            if (schedules) {
+                populateSchedulesTable(schedules);
+            }
+        }
+
+        function populateSchedulesTable(schedulesData) {
+            const schedulesTableBody = document.querySelector('#schedules-table tbody');
+            schedulesTableBody.innerHTML = '';
+
+            if (!schedulesData || schedulesData.length === 0) {
+                schedulesTableBody.innerHTML = '<tr><td colspan="7">No hay horarios registrados.</td></tr>';
+                return;
+            }
+
+            schedulesData.forEach(schedule => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${schedule.id}</td>
+                    <td>${schedule.subject}</td>
+                    <td>${schedule.group}</td>
+                    <td>${schedule.day}</td>
+                    <td>${schedule.startTime}</td>
+                    <td>${schedule.endTime}</td>
+                    <td>
+                        <button class="btn btn-warning btn-small" onclick="editSchedule(${schedule.id})" title="Editar">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-danger btn-small" onclick="deleteSchedule(${schedule.id})" title="Eliminar">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                schedulesTableBody.appendChild(row);
+            });
+        }
+
+        function showCreateScheduleModal() {
+            document.getElementById('createScheduleModal').style.display = 'block';
+            
+            // Populate subjects
+            const subjectSelect = document.getElementById('subjectScheduleSelect');
+            subjectSelect.innerHTML = '<option value="">Seleccionar Materia</option>';
+            subjects.forEach(subject => {
+                const option = document.createElement('option');
+                option.value = subject.id;
+                option.textContent = subject.name;
+                subjectSelect.appendChild(option);
+            });
+            
+            // Populate groups
+            const groupSelect = document.getElementById('groupScheduleSelect');
+            groupSelect.innerHTML = '<option value="">Seleccionar Grupo</option>';
+            groups.forEach(group => {
+                const option = document.createElement('option');
+                option.value = group.id;
+                option.textContent = group.name;
+                groupSelect.appendChild(option);
+            });
+        }
+
+        // Handle create schedule form
+        document.getElementById('createScheduleForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const scheduleData = {
+                subject: parseInt(formData.get('subjectScheduleSelect')),
+                group: parseInt(formData.get('groupScheduleSelect')),
+                day: formData.get('dayOfWeek'),
+                startTime: formData.get('startTime'),
+                endTime: formData.get('endTime')
+            };
+            
+            const result = await fetchData('/api/admin/schedules', {
+                method: 'POST',
+                body: JSON.stringify(scheduleData)
+            });
+            
+            if (result && result.success) {
+                displayMessage('Horario creado exitosamente', 'success');
+                closeModal('createScheduleModal');
+                loadSchedules();
+                e.target.reset();
+            } else {
+                displayMessage(result?.message || 'Error creando horario', 'error');
+            }
+        });
+
+        function editSchedule(scheduleId) {
+            displayMessage('Función de edición en desarrollo', 'info');
+        }
+
+        function deleteSchedule(scheduleId) {
+            displayMessage('Función de eliminación en desarrollo', 'info');
+        }
+
+        // Reports functions
+        async function generateAttendanceReport() {
+            const period = document.getElementById('attendance-report-period').value;
+            const startDate = document.getElementById('attendance-start-date').value;
+            const endDate = document.getElementById('attendance-end-date').value;
+            
+            let url = `/api/admin/reports/attendance?period=${period}&format=csv`;
+            if (period === 'custom' && startDate && endDate) {
+                url += `&start_date=${startDate}&end_date=${endDate}`;
+            }
+            
+            try {
+                const response = await fetch(url);
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const downloadUrl = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = downloadUrl;
+                    a.download = `reporte_asistencias_${period}_${new Date().toISOString().split('T')[0]}.csv`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    window.URL.revokeObjectURL(downloadUrl);
+                    
+                    displayMessage('Reporte de asistencias descargado exitosamente', 'success');
+                } else {
+                    displayMessage('Error generando reporte de asistencias', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                displayMessage('Error de conexión al generar reporte', 'error');
+            }
+        }
+
+        async function generateStudentReport() {
+            const career = document.getElementById('student-report-career').value;
+            const semester = document.getElementById('student-report-semester').value;
+            
+            const url = `/api/admin/reports/students?career=${career}&semester=${semester}&format=csv`;
+            
+            try {
+                const response = await fetch(url);
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const downloadUrl = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = downloadUrl;
+                    a.download = `reporte_estudiantes_${new Date().toISOString().split('T')[0]}.csv`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    window.URL.revokeObjectURL(downloadUrl);
+                    
+                    displayMessage('Reporte de estudiantes descargado exitosamente', 'success');
+                } else {
+                    displayMessage('Error generando reporte de estudiantes', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                displayMessage('Error de conexión al generar reporte', 'error');
+            }
+        }
+
+        function generateAttendancePDF() {
+            displayMessage('Generación de PDF en desarrollo', 'info');
+        }
+
+        function generateStudentPDF() {
+            displayMessage('Generación de PDF en desarrollo', 'info');
+        }
+
+        function generateCareerReport() {
+            displayMessage('Reporte de carreras en desarrollo', 'info');
+        }
+
+        function generateCareerPDF() {
+            displayMessage('Reporte de carreras PDF en desarrollo', 'info');
+        }
+
+        function generateStatsReport() {
+            displayMessage('Estadísticas generales en desarrollo', 'info');
+        }
+
+        function generateStatsPDF() {
+            displayMessage('Estadísticas PDF en desarrollo', 'info');
+        }
+
+        function exportAllData() {
+            displayMessage('Exportación completa en desarrollo', 'info');
+        }
+
+        function downloadReport() {
+            displayMessage('Descarga iniciada...', 'success');
+            closeReportPreview();
+        }
+
+        function closeReportPreview() {
+            const preview = document.getElementById('report-preview');
+            if (preview) {
+                preview.style.display = 'none';
+            }
+        }
+
+        // Event listener para mostrar/ocultar campos de fecha personalizada
+        document.addEventListener('DOMContentLoaded', function() {
+            const attendancePeriod = document.getElementById('attendance-report-period');
+            const startDate = document.getElementById('attendance-start-date');
+            const endDate = document.getElementById('attendance-end-date');
+            
+            if (attendancePeriod) {
+                attendancePeriod.addEventListener('change', function() {
+                    if (this.value === 'custom') {
+                        startDate.style.display = 'block';
+                        endDate.style.display = 'block';
+                    } else {
+                        startDate.style.display = 'none';
+                        endDate.style.display = 'none';
+                    }
+                });
+            }
+
+            // Populate career options in report filters
+            setTimeout(() => {
+                const studentReportCareer = document.getElementById('student-report-career');
+                if (studentReportCareer && careers.length > 0) {
+                    studentReportCareer.innerHTML = '<option value="all">Todas las Carreras</option>';
+                    careers.forEach(career => {
+                        const option = document.createElement('option');
+                        option.value = career.id;
+                        option.textContent = career.name;
+                        studentReportCareer.appendChild(option);
+                    });
+                }
+            }, 1000);
+        });
+
+        // Add CSS for badges and buttons
+        const additionalStyles = document.createElement('style');
+        additionalStyles.textContent = `
+            .badge {
+                padding: 4px 8px;
+                border-radius: 12px;
+                font-size: 0.8em;
+                font-weight: 600;
+                text-transform: uppercase;
+            }
+            .badge-student { background: #3b82f6; color: white; }
+            .badge-teacher { background: #10b981; color: white; }
+            .badge-admin { background: #f59e0b; color: white; }
+            .badge-success { background: #22c55e; color: white; }
+            .badge-danger { background: #ef4444; color: white; }
+            
+            .btn-small {
+                padding: 6px 10px;
+                font-size: 0.8em;
+                margin: 0 2px;
+            }
+            
+            .activity-item {
+                padding: 10px;
+                border-left: 3px solid #3b82f6;
+                margin-bottom: 10px;
+                background: rgba(59, 130, 246, 0.1);
+                border-radius: 4px;
+            }
+            
+            .activity-message {
+                font-weight: 600;
+                margin-bottom: 5px;
+            }
+            
+            .activity-time {
+                font-size: 0.8em;
+                color: #666;
+            }
+        `;
+        document.head.appendChild(additionalStyles);
+
+        // Initial load
+        document.addEventListener('DOMContentLoaded', () => {
+            switchSection('dashboard');
+            loadDashboardStats();
+            loadRecentActivity();
+            loadStudentsByCareerChart();
+            loadServerStatus();
+            loadUsers();
+            loadCareers();
+            loadSubjects();
+            loadGroups();
+            loadAttendance();
+            loadSchedules();
+        });
+</script>
+</body>
+</html>
+

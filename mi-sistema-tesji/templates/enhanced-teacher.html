@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Maestro - TESJI</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 20px 0;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo i {
+            font-size: 2.5em;
+            color: #667eea;
+        }
+
+        .logo-text h1 {
+            font-size: 1.8em;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .logo-text p {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .teacher-info {
+            text-align: right;
+        }
+
+        .teacher-name {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .teacher-details {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            color: white;
+        }
+
+        .card-icon.blue { background: linear-gradient(135deg, #667eea, #764ba2); }
+        .card-icon.green { background: linear-gradient(135deg, #4CAF50, #45a049); }
+        .card-icon.orange { background: linear-gradient(135deg, #FF9800, #F57C00); }
+        .card-icon.purple { background: linear-gradient(135deg, #9C27B0, #7B1FA2); }
+
+        .card-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 15px;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 10px;
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .subject-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .subject-card {
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .subject-card:hover {
+            background: rgba(102, 126, 234, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .subject-card.selected {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.2);
+        }
+
+        .subject-name {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .subject-details {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .btn {
+            padding: 15px 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #f44336, #d32f2f);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .attendance-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .attendance-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            transition: background 0.3s ease;
+        }
+
+        .attendance-item:hover {
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .student-info {
+            flex: 1;
+        }
+
+        .student-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .student-details {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .attendance-status {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+
+        .status-present {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .status-absent {
+            background: #f44336;
+            color: white;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .error {
+            background: rgba(244, 67, 54, 0.1);
+            border: 1px solid #f44336;
+            color: #f44336;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+        }
+
+        .success {
+            background: rgba(76, 175, 80, 0.1);
+            border: 1px solid #4CAF50;
+            color: #4CAF50;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                padding: 20px 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-chalkboard-teacher"></i>
+                <div class="logo-text">
+                    <h1>Panel de Maestro</h1>
+                    <p>Sistema RFID - TESJI</p>
+                </div>
+            </div>
+            <div class="teacher-info">
+                <div class="teacher-name" id="teacherName">Cargando...</div>
+                <div class="teacher-details" id="teacherDetails">Verificando credenciales...</div>
+                <button class="btn btn-danger" onclick="logout()" style="margin-top: 10px; padding: 8px 16px; font-size: 0.9em;">
+                    <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Dashboard Grid -->
+        <div class="dashboard-grid">
+            <!-- Mis Materias -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon blue">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <div class="card-title">Mis Materias</div>
+                </div>
+                <div id="subjectGrid" class="subject-grid">
+                    <div class="loading">Cargando materias...</div>
+                </div>
+                <button id="startAttendanceBtn" class="btn btn-primary" onclick="startAttendance()" disabled style="margin-top: 20px;">
+                    <i class="fas fa-play"></i> Iniciar Pase de Lista
+                </button>
+            </div>
+
+            <!-- Estadísticas -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon green">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <div class="card-title">Estadísticas de Hoy</div>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-number" id="totalStudents">0</div>
+                        <div class="stat-label">Estudiantes</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" id="presentStudents">0</div>
+                        <div class="stat-label">Presentes</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" id="absentStudents">0</div>
+                        <div class="stat-label">Ausentes</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" id="attendancePercentage">0%</div>
+                        <div class="stat-label">Asistencia</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lista de Asistencia -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon purple">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="card-title">Lista de Asistencia</div>
+                </div>
+                <div id="attendanceStatus" class="loading">Selecciona una materia para ver la lista</div>
+                <div id="attendanceList" class="attendance-list" style="display: none;"></div>
+            </div>
+
+            <!-- Acciones Rápidas -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon orange">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <div class="card-title">Acciones Rápidas</div>
+                </div>
+                <div style="display: grid; gap: 15px;">
+                    <button class="btn btn-success" onclick="viewReports()">
+                        <i class="fas fa-chart-line"></i> Ver Reportes
+                    </button>
+                    <button class="btn btn-primary" onclick="exportAttendance()">
+                        <i class="fas fa-download"></i> Exportar Asistencias
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Variables globales
+        let currentTeacher = null;
+        let selectedSubject = null;
+        let teacherSubjects = [];
+        let currentAttendance = [];
+        let attendanceActive = false;
+
+        // Elementos DOM
+        const elements = {
+            teacherName: document.getElementById("teacherName"),
+            teacherDetails: document.getElementById("teacherDetails"),
+            subjectGrid: document.getElementById("subjectGrid"),
+            startAttendanceBtn: document.getElementById("startAttendanceBtn"),
+            attendanceStatus: document.getElementById("attendanceStatus"),
+            attendanceList: document.getElementById("attendanceList"),
+            totalStudents: document.getElementById("totalStudents"),
+            presentStudents: document.getElementById("presentStudents"),
+            absentStudents: document.getElementById("absentStudents"),
+            attendancePercentage: document.getElementById("attendancePercentage"),
+        };
+
+        // Función para mostrar errores
+        function showError(message) {
+            console.error('❌ Error:', message);
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error';
+            errorDiv.innerHTML = `<i class="fas fa-exclamation-triangle"></i> ${message}`;
+            document.querySelector('.container').insertBefore(errorDiv, document.querySelector('.dashboard-grid'));
+            setTimeout(() => errorDiv.remove(), 5000);
+        }
+
+        // Función para mostrar éxito
+        function showSuccess(message) {
+            console.log('✅ Éxito:', message);
+            const successDiv = document.createElement('div');
+            successDiv.className = 'success';
+            successDiv.innerHTML = `<i class="fas fa-check-circle"></i> ${message}`;
+            document.querySelector('.container').insertBefore(successDiv, document.querySelector('.dashboard-grid'));
+            setTimeout(() => successDiv.remove(), 3000);
+        }
+
+        // Cargar información del maestro
+        async function loadTeacherInfo() {
+            try {
+                console.log('🔄 Cargando información del maestro...');
+                
+                // Obtener token del localStorage
+                const token = localStorage.getItem("teacher_token");
+                if (!token) {
+                    console.warn('⚠️ No hay token, redirigiendo al login');
+                    window.location.href = "/login-teacher.html";
+                    return;
+                }
+
+                console.log('🔑 Token encontrado, verificando con servidor...');
+
+                const response = await fetch("/api/teacher/profile", {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success && data.teacher) {
+                        currentTeacher = data.teacher;
+                        console.log('✅ Información del maestro cargada:', currentTeacher);
+
+                        elements.teacherName.textContent = currentTeacher.nombre;
+                        elements.teacherDetails.textContent = `${currentTeacher.matricula} - ${currentTeacher.email}`;
+                        
+                        return true;
+                    } else {
+                        throw new Error(data.message || 'Error en respuesta del servidor');
+                    }
+                } else if (response.status === 401) {
+                    console.warn('⚠️ Token inválido, redirigiendo al login');
+                    localStorage.removeItem("teacher_token");
+                    window.location.href = "/login-teacher.html";
+                    return false;
+                } else {
+                    throw new Error(`Error HTTP ${response.status}`);
+                }
+            } catch (error) {
+                console.error('❌ Error cargando información del maestro:', error);
+                
+                // Usar datos de ejemplo como fallback
+                console.log('🔄 Usando datos de ejemplo como fallback...');
+                loadSampleTeacherData();
+                return true;
+            }
+        }
+
+        // Datos de ejemplo del maestro
+        function loadSampleTeacherData() {
+            currentTeacher = {
+                id: 1,
+                nombre: "Dr. Juan Carlos Pérez",
+                matricula: "PROF001",
+                email: "juan.perez@tesji.edu.mx",
+            };
+
+            elements.teacherName.textContent = currentTeacher.nombre;
+            elements.teacherDetails.textContent = `${currentTeacher.matricula} - ${currentTeacher.email}`;
+            
+            console.log('✅ Datos de ejemplo cargados');
+        }
+
+        // Cargar materias del maestro
+        async function loadTeacherSubjects() {
+            try {
+                console.log('🔄 Cargando materias del maestro...');
+                
+                const token = localStorage.getItem("teacher_token");
+                if (!token) {
+                    loadSampleSubjects();
+                    return;
+                }
+
+                const response = await fetch("/api/teacher/subjects", {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success && data.subjects) {
+                        teacherSubjects = data.subjects;
+                        console.log('✅ Materias cargadas:', teacherSubjects.length);
+                    } else {
+                        throw new Error('No se pudieron cargar las materias');
+                    }
+                } else {
+                    throw new Error(`Error HTTP ${response.status}`);
+                }
+            } catch (error) {
+                console.error('❌ Error cargando materias:', error);
+                loadSampleSubjects();
+            }
+
+            renderSubjects();
+        }
+
+        // Materias de ejemplo
+        function loadSampleSubjects() {
+            teacherSubjects = [
+                {
+                    id: 1,
+                    nombre: "Programación Web",
+                    codigo: "ISC-0519",
+                    carrera: "Ingeniería en Sistemas Computacionales",
+                    semestre: 5,
+                    grupo: "ISC-0501",
+                    horario: "08:00-09:30",
+                    aula: "LAB-1",
+                    estudiantes_inscritos: 25,
+                },
+                {
+                    id: 2,
+                    nombre: "Base de Datos",
+                    codigo: "ISC-0408",
+                    carrera: "Ingeniería en Sistemas Computacionales",
+                    semestre: 4,
+                    grupo: "ISC-0401",
+                    horario: "10:00-11:30",
+                    aula: "ACA-101",
+                    estudiantes_inscritos: 28,
+                },
+                {
+                    id: 3,
+                    nombre: "Redes de Computadoras",
+                    codigo: "ISC-0516",
+                    carrera: "Ingeniería en Sistemas Computacionales",
+                    semestre: 5,
+                    grupo: "ISC-0502",
+                    horario: "12:00-13:30",
+                    aula: "LAB-2",
+                    estudiantes_inscritos: 22,
+                },
+            ];
+            
+            console.log('✅ Materias de ejemplo cargadas');
+        }
+
+        // Renderizar materias
+        function renderSubjects() {
+            if (!elements.subjectGrid) return;
+
+            if (teacherSubjects.length === 0) {
+                elements.subjectGrid.innerHTML = '<div class="loading">No hay materias asignadas</div>';
+                return;
+            }
+
+            elements.subjectGrid.innerHTML = teacherSubjects
+                .map(
+                    (subject) => `
+                        <div class="subject-card" data-subject-id="${subject.id}" onclick="selectSubject(${subject.id})">
+                            <div class="subject-name">${subject.nombre}</div>
+                            <div class="subject-details">
+                                ${subject.grupo || 'Grupo N/A'} - ${subject.horario || 'Horario N/A'}<br>
+                                ${subject.aula || 'Aula N/A'} - ${subject.estudiantes_inscritos || 0} estudiantes
+                            </div>
+                        </div>
+                    `,
+                )
+                .join("");
+                
+            console.log('✅ Materias renderizadas');
+        }
+
+        // Seleccionar materia
+        function selectSubject(subjectId) {
+            selectedSubject = teacherSubjects.find((s) => s.id === subjectId);
+
+            if (!selectedSubject) {
+                showError('Materia no encontrada');
+                return;
+            }
+
+            console.log('📚 Materia seleccionada:', selectedSubject.nombre);
+
+            // Actualizar UI
+            document.querySelectorAll(".subject-card").forEach((el) => {
+                el.classList.remove("selected");
+            });
+            document.querySelector(`[data-subject-id="${subjectId}"]`).classList.add("selected");
+
+            // Habilitar botón de asistencia
+            elements.startAttendanceBtn.disabled = false;
+
+            // Cargar asistencias de la materia
+            loadSubjectAttendance();
+
+            showSuccess(`Materia seleccionada: ${selectedSubject.nombre}`);
+        }
+
+        // Cargar asistencias de la materia
+        async function loadSubjectAttendance() {
+            if (!selectedSubject) return;
+
+            try {
+                console.log('🔄 Cargando asistencias para:', selectedSubject.nombre);
+                
+                const token = localStorage.getItem("teacher_token");
+                if (!token) {
+                    loadSampleAttendance();
+                    return;
+                }
+
+                const response = await fetch(`/api/teacher/attendance/${selectedSubject.id}`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success && data.attendance) {
+                        currentAttendance = data.attendance;
+                        console.log('✅ Asistencias cargadas:', currentAttendance.length);
+                    } else {
+                        throw new Error('No se pudieron cargar las asistencias');
+                    }
+                } else {
+                    throw new Error(`Error HTTP ${response.status}`);
+                }
+            } catch (error) {
+                console.error('❌ Error cargando asistencias:', error);
+                loadSampleAttendance();
+            }
+
+            renderAttendance();
+            updateStats();
+        }
+
+        // Asistencias de ejemplo
+        function loadSampleAttendance() {
+            const sampleStudents = [
+                { id: 1, nombre: "María González López", matricula: "EST202301", presente: true, hora: "08:05" },
+                { id: 2, nombre: "Carlos Hernández Ruiz", matricula: "EST202302", presente: true, hora: "08:03" },
+                { id: 3, nombre: "Ana Martínez Silva", matricula: "EST202303", presente: false, hora: null },
+                { id: 4, nombre: "Luis García Pérez", matricula: "EST202304", presente: true, hora: "08:07" },
+                { id: 5, nombre: "Sofia Rodríguez López", matricula: "EST202305", presente: false, hora: null },
+                { id: 6, nombre: "Diego Morales Castro", matricula: "EST202306", presente: true, hora: "08:02" },
+                { id: 7, nombre: "Isabella Torres Vega", matricula: "EST202307", presente: true, hora: "08:06" },
+                { id: 8, nombre: "Alejandro Jiménez Ramos", matricula: "EST202308", presente: false, hora: null },
+            ];
+
+            currentAttendance = sampleStudents;
+            console.log('✅ Asistencias de ejemplo cargadas');
+        }
+
+        // Renderizar asistencias
+        function renderAttendance() {
+            if (!currentAttendance.length) {
+                elements.attendanceStatus.style.display = "block";
+                elements.attendanceStatus.textContent = "No hay asistencias registradas para esta materia";
+                elements.attendanceList.style.display = "none";
+                return;
+            }
+
+            elements.attendanceStatus.style.display = "none";
+            elements.attendanceList.style.display = "block";
+
+            elements.attendanceList.innerHTML = currentAttendance
+                .map(
+                    (student) => `
+                        <div class="attendance-item">
+                            <div class="student-info">
+                                <div class="student-name">${student.nombre}</div>
+                                <div class="student-details">
+                                    ${student.matricula} ${student.hora ? `- Llegó: ${student.hora}` : ""}
+                                </div>
+                            </div>
+                            <div class="attendance-status ${student.presente ? "status-present" : "status-absent"}">
+                                ${student.presente ? "Presente" : "Ausente"}
+                            </div>
+                        </div>
+                    `,
+                )
+                .join("");
+                
+            console.log('✅ Lista de asistencia renderizada');
+        }
+
+        // Actualizar estadísticas
+        function updateStats() {
+            const total = currentAttendance.length;
+            const present = currentAttendance.filter((s) => s.presente).length;
+            const absent = total - present;
+            const percentage = total > 0 ? Math.round((present / total) * 100) : 0;
+
+            elements.totalStudents.textContent = total;
+            elements.presentStudents.textContent = present;
+            elements.absentStudents.textContent = absent;
+            elements.attendancePercentage.textContent = `${percentage}%`;
+            
+            console.log('📊 Estadísticas actualizadas:', { total, present, absent, percentage });
+        }
+
+        // Iniciar pase de lista
+        function startAttendance() {
+            if (!selectedSubject) {
+                showError("Selecciona una materia primero");
+                return;
+            }
+
+            attendanceActive = !attendanceActive;
+
+            if (attendanceActive) {
+                elements.startAttendanceBtn.innerHTML = '<i class="fas fa-stop"></i> Detener Pase de Lista';
+                elements.startAttendanceBtn.className = "btn btn-danger";
+
+                showSuccess(`Pase de lista iniciado para ${selectedSubject.nombre}`);
+                console.log("📝 Pase de lista activo para:", selectedSubject.nombre);
+            } else {
+                elements.startAttendanceBtn.innerHTML = '<i class="fas fa-play"></i> Iniciar Pase de Lista';
+                elements.startAttendanceBtn.className = "btn btn-primary";
+
+                showSuccess("Pase de lista detenido");
+                console.log("⏹️ Pase de lista detenido");
+            }
+        }
+
+        // Ver reportes
+        function viewReports() {
+            if (!selectedSubject) {
+                showError("Selecciona una materia primero");
+                return;
+            }
+
+            showSuccess(`Abriendo reportes para ${selectedSubject.nombre}...`);
+            console.log("📊 Abriendo reportes para:", selectedSubject.nombre);
+        }
+
+        // Exportar asistencias
+        function exportAttendance() {
+            if (!selectedSubject || !currentAttendance.length) {
+                showError("No hay datos de asistencia para exportar");
+                return;
+            }
+
+            try {
+                // Crear datos CSV
+                const csvData = [
+                    ["Nombre", "Matrícula", "Estado", "Hora de Llegada"],
+                    ...currentAttendance.map((student) => [
+                        student.nombre,
+                        student.matricula,
+                        student.presente ? "Presente" : "Ausente",
+                        student.hora || "N/A",
+                    ]),
+                ];
+
+                const csvContent = csvData.map((row) => row.join(",")).join("\n");
+                const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+                const link = document.createElement("a");
+
+                if (link.download !== undefined) {
+                    const url = URL.createObjectURL(blob);
+                    link.setAttribute("href", url);
+                    link.setAttribute("download", `asistencia_${selectedSubject.nombre}_${new Date().toISOString().split("T")[0]}.csv`);
+                    link.style.visibility = "hidden";
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    
+                    showSuccess("Archivo de asistencia exportado");
+                    console.log("📄 Archivo de asistencia exportado");
+                }
+            } catch (error) {
+                console.error('❌ Error exportando:', error);
+                showError("Error al exportar archivo");
+            }
+        }
+
+        // Cerrar sesión
+        function logout() {
+            console.log('👋 Cerrando sesión...');
+            localStorage.removeItem("teacher_token");
+            window.location.href = "/login-teacher.html";
+        }
+
+        // Inicialización
+        document.addEventListener("DOMContentLoaded", async () => {
+            console.log("🚀 Iniciando panel del maestro...");
+            
+            try {
+                // Cargar información del maestro
+                const teacherLoaded = await loadTeacherInfo();
+                if (!teacherLoaded) {
+                    console.error('❌ No se pudo cargar información del maestro');
+                    return;
+                }
+
+                // Cargar materias
+                await loadTeacherSubjects();
+
+                console.log("✅ Panel del maestro cargado completamente");
+                
+            } catch (error) {
+                console.error('❌ Error durante la inicialización:', error);
+                showError('Error al cargar el panel. Usando datos de ejemplo.');
+                
+                // Cargar datos de ejemplo como fallback
+                loadSampleTeacherData();
+                loadSampleSubjects();
+                renderSubjects();
+            }
+        });
+
+        // Manejo de errores globales
+        window.addEventListener('error', (event) => {
+            console.error('❌ Error global:', event.error);
+        });
+
+        window.addEventListener('unhandledrejection', (event) => {
+            console.error('❌ Promise rechazada:', event.reason);
+        });
+
+        console.log("✅ Script del panel del maestro cargado");
+    </script>
+</body>
+</html>

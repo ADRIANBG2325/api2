@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel de Estudiante - TESJI</title>
+  <link rel="stylesheet" href="/static/student.css">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+  <div class="background-gradient"></div>
+  
+  <div class="student-container">
+      <!-- Header -->
+      <div class="header">
+          <div class="header-content">
+              <div class="logo-section">
+                  <i class="fas fa-graduation-cap"></i>
+                  <div>
+                      <h1>Panel de Estudiante</h1>
+                      <p>Sistema RFID - TESJI</p>
+                  </div>
+              </div>
+              <div class="user-info">
+                  <div class="user-avatar">
+                      <i class="fas fa-user-graduate"></i>
+                  </div>
+                  <div class="user-details">
+                      <span id="student-name">Cargando...</span>
+                      <span id="student-matricula">Matrícula: ---</span>
+                      <span id="student-grupo">Grupo: ---</span>
+                  </div>
+              </div>
+          </div>
+      </div>
+
+      <!-- Dashboard Principal -->
+      <div class="dashboard">
+          <!-- Mi Horario Semanal Completo -->
+          <div class="card full-schedule-card">
+              <div class="card-header">
+                  <i class="fas fa-calendar-week"></i>
+                  <h3>Mi Horario Semanal</h3>
+                  <div class="schedule-info">
+                      <span id="schedule-group">Cargando grupo...</span>
+                      <span id="schedule-stats">Cargando estadísticas...</span>
+                  </div>
+              </div>
+              <div id="student-weekly-schedule">
+                  <div class="loading-schedule">
+                      <i class="fas fa-spinner fa-spin"></i>
+                      <span>Cargando horario completo...</span>
+                  </div>
+              </div>
+          </div>
+
+          <!-- Horario de Hoy -->
+          <div class="card today-schedule-card">
+              <div class="card-header">
+                  <i class="fas fa-clock"></i>
+                  <h3>Clases de Hoy</h3>
+                  <span class="today-date" id="today-date"></span>
+              </div>
+              <div class="today-schedule" id="today-schedule">
+                  <div class="loading-schedule">
+                      <i class="fas fa-spinner fa-spin"></i>
+                      <span>Cargando clases de hoy...</span>
+                  </div>
+              </div>
+          </div>
+
+          <!-- Estadísticas de Asistencia -->
+          <div class="card stats-card">
+              <div class="card-header">
+                  <i class="fas fa-chart-pie"></i>
+                  <h3>Resumen de Asistencias</h3>
+              </div>
+              <div class="stats-grid">
+                  <div class="stat-item">
+                      <div class="stat-icon success">
+                          <i class="fas fa-check-circle"></i>
+                      </div>
+                      <div class="stat-info">
+                          <div class="stat-number" id="attendance-percentage">85%</div>
+                          <div class="stat-label">Asistencia General</div>
+                      </div>
+                  </div>
+                  <div class="stat-item">
+                      <div class="stat-icon info">
+                          <i class="fas fa-calendar-check"></i>
+                      </div>
+                      <div class="stat-info">
+                          <div class="stat-number" id="days-attended">23</div>
+                          <div class="stat-label">Días Asistidos</div>
+                      </div>
+                  </div>
+                  <div class="stat-item">
+                      <div class="stat-icon warning">
+                          <i class="fas fa-calendar-times"></i>
+                      </div>
+                      <div class="stat-info">
+                          <div class="stat-number" id="days-missed">4</div>
+                          <div class="stat-label">Faltas</div>
+                      </div>
+                  </div>
+                  <div class="stat-item">
+                      <div class="stat-icon primary">
+                          <i class="fas fa-book"></i>
+                      </div>
+                      <div class="stat-info">
+                          <div class="stat-number" id="total-subjects">6</div>
+                          <div class="stat-label">Materias</div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+
+          <!-- Acciones Rápidas -->
+          <div class="card actions-card">
+              <div class="card-header">
+                  <i class="fas fa-bolt"></i>
+                  <h3>Acciones Rápidas</h3>
+              </div>
+              <div class="actions-grid">
+                  <button onclick="registerAttendance()" class="action-btn primary">
+                      <i class="fas fa-qrcode"></i>
+                      <span>Registrar Asistencia</span>
+                      <small>Usar lector RFID</small>
+                  </button>
+                  <button onclick="refreshSchedule()" class="action-btn info">
+                      <i class="fas fa-sync-alt"></i>
+                      <span>Actualizar Horario</span>
+                      <small>Recargar datos</small>
+                  </button>
+                  <button onclick="viewGrades()" class="action-btn success">
+                      <i class="fas fa-chart-line"></i>
+                      <span>Calificaciones</span>
+                      <small>Consultar notas</small>
+                  </button>
+                  <button onclick="downloadReport()" class="action-btn warning">
+                      <i class="fas fa-download"></i>
+                      <span>Descargar Reporte</span>
+                      <small>PDF de asistencias</small>
+                  </button>
+              </div>
+          </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="footer">
+          <div class="footer-actions">
+              <button onclick="window.location.href='/welcome.html'" class="btn btn-primary">
+                  <i class="fas fa-qrcode"></i>
+                  Volver a RFID
+              </button>
+              <button onclick="window.location.href='/'" class="btn btn-outline">
+                  <i class="fas fa-home"></i>
+                  Inicio
+              </button>
+              <button onclick="logout()" class="btn btn-danger">
+                  <i class="fas fa-sign-out-alt"></i>
+                  Salir
+              </button>
+          </div>
+      </div>
+  </div>
+
+  <script src="/static/student.js"></script>
+</body>
+</html>

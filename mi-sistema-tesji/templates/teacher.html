@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Maestro - TESJI</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 20px 0;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo i {
+            font-size: 2.5em;
+            color: #667eea;
+        }
+
+        .logo-text h1 {
+            font-size: 1.8em;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .logo-text p {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .teacher-info {
+            text-align: right;
+        }
+
+        .teacher-name {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .teacher-details {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            color: white;
+        }
+
+        .card-icon.blue { background: linear-gradient(135deg, #667eea, #764ba2); }
+        .card-icon.green { background: linear-gradient(135deg, #4CAF50, #45a049); }
+        .card-icon.orange { background: linear-gradient(135deg, #FF9800, #F57C00); }
+        .card-icon.purple { background: linear-gradient(135deg, #9C27B0, #7B1FA2); }
+
+        .card-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 15px;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 10px;
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .schedule-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: rgba(102, 126, 234, 0.05);
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .schedule-time {
+            font-weight: 600;
+            color: #667eea;
+            min-width: 80px;
+        }
+
+        .schedule-details h4 {
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .schedule-details p {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 15px 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #FF9800, #F57C00);
+            color: white;
+        }
+
+        .btn-info {
+            background: linear-gradient(135deg, #2196F3, #1976D2);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .current-class {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .current-class h3 {
+            margin-bottom: 10px;
+            font-size: 1.5em;
+        }
+
+        .current-class p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+
+        .attendance-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .attendance-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .attendance-item:last-child {
+            border-bottom: none;
+        }
+
+        .student-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .student-avatar {
+            width: 35px;
+            height: 35px;
+            background: #667eea;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+
+        .status-present {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .status-absent {
+            background: #f44336;
+            color: white;
+        }
+
+        .logout-btn {
+            background: linear-gradient(135deg, #f44336, #d32f2f);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(244, 67, 54, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                padding: 20px 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-chalkboard-teacher"></i>
+                <div class="logo-text">
+                    <h1>Panel de Maestro</h1>
+                    <p>Sistema RFID - TESJI</p>
+                </div>
+            </div>
+            <div class="teacher-info">
+                <div class="teacher-name" id="teacherName">Maestro Demo</div>
+                <div class="teacher-details" id="teacherDetails">Matrícula: DEMO123 | Grupo: ---</div>
+                <button class="logout-btn" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Clase Actual -->
+        <div class="current-class">
+            <h3><i class="fas fa-clock"></i> Clase Actual</h3>
+            <p id="currentClass">Programación Web - Grupo 4302 - LAB-1</p>
+            <p id="currentTime">08:00 - 09:30</p>
+        </div>
+
+        <!-- Dashboard Grid -->
+        <div class="dashboard-grid">
+            <!-- Estadísticas -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon blue">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <div class="card-title">Estadísticas de Hoy</div>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-number" id="totalStudents">28</div>
+                        <div class="stat-label">Estudiantes</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" id="presentStudents">24</div>
+                        <div class="stat-label">Presentes</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" id="absentStudents">4</div>
+                        <div class="stat-label">Ausentes</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" id="attendanceRate">86%</div>
+                        <div class="stat-label">Asistencia</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Horario -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon green">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    <div class="card-title">Horario de Hoy</div>
+                </div>
+                <div id="scheduleList">
+                    <div class="schedule-item">
+                        <div class="schedule-time">08:00</div>
+                        <div class="schedule-details">
+                            <h4>Programación Web</h4>
+                            <p>Grupo 4302 - LAB-1</p>
+                        </div>
+                    </div>
+                    <div class="schedule-item">
+                        <div class="schedule-time">10:00</div>
+                        <div class="schedule-details">
+                            <h4>Base de Datos</h4>
+                            <p>Grupo 4301 - ACA-101</p>
+                        </div>
+                    </div>
+                    <div class="schedule-item">
+                        <div class="schedule-time">12:00</div>
+                        <div class="schedule-details">
+                            <h4>Redes de Computadoras</h4>
+                            <p>Grupo 4303 - LAB-2</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Acciones Rápidas -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon orange">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <div class="card-title">Acciones Rápidas</div>
+                </div>
+                <div class="action-buttons">
+                    <button class="btn btn-primary" onclick="takeAttendance()">
+                        <i class="fas fa-user-check"></i>
+                        Tomar Asistencia
+                    </button>
+                    <button class="btn btn-success" onclick="viewAttendance()">
+                        <i class="fas fa-list"></i>
+                        Ver Asistencias
+                    </button>
+                    <button class="btn btn-warning" onclick="generateReport()">
+                        <i class="fas fa-file-pdf"></i>
+                        Generar Reporte
+                    </button>
+                    <button class="btn btn-info" onclick="manageStudents()">
+                        <i class="fas fa-users"></i>
+                        Gestionar Estudiantes
+                    </button>
+                </div>
+            </div>
+
+            <!-- Asistencias Recientes -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon purple">
+                        <i class="fas fa-history"></i>
+                    </div>
+                    <div class="card-title">Asistencias Recientes</div>
+                </div>
+                <div class="attendance-list" id="recentAttendance">
+                    <div class="attendance-item">
+                        <div class="student-info">
+                            <div class="student-avatar">JD</div>
+                            <div>
+                                <div>Juan Pérez</div>
+                                <small>EST2023001</small>
+                            </div>
+                        </div>
+                        <div class="status-badge status-present">Presente</div>
+                    </div>
+                    <div class="attendance-item">
+                        <div class="student-info">
+                            <div class="student-avatar">ML</div>
+                            <div>
+                                <div>María López</div>
+                                <small>EST2023002</small>
+                            </div>
+                        </div>
+                        <div class="status-badge status-present">Presente</div>
+                    </div>
+                    <div class="attendance-item">
+                        <div class="student-info">
+                            <div class="student-avatar">CG</div>
+                            <div>
+                                <div>Carlos García</div>
+                                <small>EST2023003</small>
+                            </div>
+                        </div>
+                        <div class="status-badge status-absent">Ausente</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Variables globales
+        let teacherData = null;
+
+        // Función para obtener parámetros de URL
+        function getURLParams() {
+            const params = new URLSearchParams(window.location.search);
+            return {
+                teacher_id: params.get('teacher_id'),
+                name: params.get('name'),
+                matricula: params.get('matricula'),
+                email: params.get('email'),
+                subject: params.get('subject'),
+                group: params.get('group')
+            };
+        }
+
+        // Función para actualizar la UI del maestro
+        function updateTeacherUI(data) {
+            console.log('📝 Actualizando UI del maestro:', data);
+            
+            if (data.name) {
+                document.getElementById('teacherName').textContent = data.name;
+                console.log('✅ Nombre actualizado:', data.name);
+            }
+            
+            if (data.matricula) {
+                const details = `Matrícula: ${data.matricula}${data.group ? ` | Grupo: ${data.group}` : ''}`;
+                document.getElementById('teacherDetails').textContent = details;
+                console.log('✅ Detalles actualizados:', details);
+            }
+            
+            if (data.subject && data.group) {
+                document.getElementById('currentClass').textContent = `${data.subject} - Grupo ${data.group} - LAB-1`;
+                console.log('✅ Clase actual actualizada');
+            }
+        }
+
+        // Cargar datos del maestro
+        async function loadTeacherData() {
+            console.log('🔄 Cargando datos del maestro...');
+            
+            // 1. Intentar obtener de parámetros URL
+            const urlParams = getURLParams();
+            console.log('📋 Parámetros URL:', urlParams);
+            
+            if (urlParams.name) {
+                console.log('✅ Datos encontrados en URL');
+                updateTeacherUI(urlParams);
+                teacherData = urlParams;
+                return;
+            }
+            
+            // 2. Intentar obtener de localStorage
+            const storedData = localStorage.getItem('teacher_data');
+            if (storedData) {
+                try {
+                    const parsed = JSON.parse(storedData);
+                    console.log('✅ Datos encontrados en localStorage:', parsed);
+                    updateTeacherUI({
+                        name: parsed.nombre || parsed.name,
+                        matricula: parsed.matricula,
+                        email: parsed.email,
+                        subject: 'Programación Web',
+                        group: '4302'
+                    });
+                    teacherData = parsed;
+                    return;
+                } catch (e) {
+                    console.error('❌ Error parseando localStorage:', e);
+                }
+            }
+            
+            // 3. Si no hay datos, usar valores por defecto
+            console.log('⚠️ No se encontraron datos del maestro, usando valores por defecto');
+        }
+
+        // Cargar horario del maestro
+        async function loadSchedule() {
+            try {
+                const teacherId = teacherData?.id || teacherData?.teacher_id || '1';
+                const response = await fetch(`/api/teacher/schedule?teacher_id=${teacherId}`);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success && data.schedule) {
+                        updateScheduleUI(data.schedule);
+                        console.log('✅ Horario cargado exitosamente');
+                    }
+                }
+            } catch (error) {
+                console.error('❌ Error cargando horario:', error);
+            }
+        }
+
+        // Actualizar UI del horario
+        function updateScheduleUI(schedule) {
+            const scheduleList = document.getElementById('scheduleList');
+            scheduleList.innerHTML = '';
+            
+            schedule.forEach(item => {
+                const scheduleItem = document.createElement('div');
+                scheduleItem.className = 'schedule-item';
+                scheduleItem.innerHTML = `
+                    <div class="schedule-time">${item.horario.split(' - ')[0]}</div>
+                    <div class="schedule-details">
+                        <h4>${item.materia}</h4>
+                        <p>Grupo ${item.grupo} - ${item.aula}</p>
+                    </div>
+                `;
+                scheduleList.appendChild(scheduleItem);
+            });
+        }
+
+        // Funciones de acciones
+        function takeAttendance() {
+            alert('🎫 Función de tomar asistencia - Próximamente');
+        }
+
+        function viewAttendance() {
+            alert('📋 Función de ver asistencias - Próximamente');
+        }
+
+        function generateReport() {
+            alert('📄 Función de generar reporte - Próximamente');
+        }
+
+        function manageStudents() {
+            alert('👥 Función de gestionar estudiantes - Próximamente');
+        }
+
+        function logout() {
+            localStorage.removeItem('teacher_data');
+            window.location.href = '/login-teacher.html';
+        }
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', async () => {
+            console.log('🚀 Iniciando panel de maestro...');
+            
+            await loadTeacherData();
+            await loadSchedule();
+            
+            console.log('✅ Panel de maestro cargado completamente');
+        });
+    </script>
+</body>
+</html>

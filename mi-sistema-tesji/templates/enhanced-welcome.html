@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TESJI - Sistema RFID Profesional</title>
+    <link rel="stylesheet" href="/static/welcome.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .career-selector {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+        .career-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .career-option {
+            background: rgba(255,255,255,0.1);
+            border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 10px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        .career-option:hover {
+            background: rgba(255,255,255,0.2);
+            border-color: #4CAF50;
+            transform: translateY(-2px);
+        }
+        .career-option.selected {
+            background: rgba(76, 175, 80, 0.3);
+            border-color: #4CAF50;
+        }
+        .career-icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+            display: block;
+        }
+        .career-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        .career-code {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+        .semester-selector {
+            margin: 15px 0;
+        }
+        .semester-grid {
+            display: grid;
+            grid-template-columns: repeat(9, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .semester-option {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 5px;
+            padding: 10px 5px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9em;
+        }
+        .semester-option:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        .semester-option.selected {
+            background: rgba(76, 175, 80, 0.3);
+            border-color: #4CAF50;
+        }
+    </style>
+</head>
+<body>
+    <div class="background-animation">
+        <div class="floating-shapes">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+            <div class="shape shape-3"></div>
+            <div class="shape shape-4"></div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <div class="logo">
+                <i class="fas fa-graduation-cap"></i>
+                <h1>TESJI - Sistema RFID</h1>
+            </div>
+            <p class="subtitle">Tecnológico de Estudios Superiores de Jilotepec</p>
+            <p class="career">Control de Asistencias Profesional</p>
+        </div>
+
+        <div class="main-content">
+            <!-- Estado del Sistema -->
+            <div class="status-card waiting" id="statusCard">
+                <div class="status-icon">
+                    <i class="fas fa-wifi" id="statusIcon"></i>
+                </div>
+                <div class="status-info">
+                    <h3 id="statusTitle">Esperando Tarjeta RFID...</h3>
+                    <p id="statusMessage">Acerca tu tarjeta al lector para registrarte</p>
+                </div>
+                <div class="pulse-animation"></div>
+            </div>
+
+            <!-- Información de Usuario Detectado -->
+            <div class="user-detected" id="userDetected" style="display: none;">
+                <div class="user-avatar">
+                    <i class="fas fa-user-graduate"></i>
+                </div>
+                <div class="user-info">
+                    <h3 id="userName">Usuario Detectado</h3>
+                    <p id="userDetails">Información del usuario</p>
+                    <div class="user-actions">
+                        <button class="btn btn-success" onclick="confirmAttendance()">
+                            <i class="fas fa-check"></i> Confirmar Asistencia
+                        </button>
+                        <button class="btn btn-secondary" onclick="viewProfile()">
+                            <i class="fas fa-user"></i> Ver Perfil
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Formulario de Registro Mejorado -->
+            <div class="registration-form" id="registrationForm" style="display: none;">
+                <div class="form-header">
+                    <i class="fas fa-user-plus"></i>
+                    <h3>Registro de Nuevo Estudiante</h3>
+                    <p>Complete la información para registrar su tarjeta RFID</p>
+                </div>
+
+                <form id="studentForm">
+                    <div class="form-group">
+                        <label for="uid">
+                            <i class="fas fa-id-card"></i>
+                            UID de la Tarjeta
+                        </label>
+                        <input type="text" id="uid" name="uid" readonly>
+                        <div class="input-decoration"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="nombre">
+                            <i class="fas fa-user"></i>
+                            Nombre Completo
+                        </label>
+                        <input type="text" id="nombre" name="nombre" required placeholder="Ej: María González López">
+                        <div class="input-decoration"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="matricula">
+                            <i class="fas fa-id-badge"></i>
+                            Matrícula
+                        </label>
+                        <input type="text" id="matricula" name="matricula" required placeholder="Ej: 202301001">
+                        <div class="input-decoration"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">
+                            <i class="fas fa-envelope"></i>
+                            Correo Electrónico
+                        </label>
+                        <input type="email" id="email" name="email" required placeholder="Ej: maria.gonzalez@tesji.edu.mx">
+                        <div class="input-decoration"></div>
+                    </div>
+
+                    <!-- Selector de Carrera -->
+                    <div class="career-selector">
+                        <h4><i class="fas fa-graduation-cap"></i> Selecciona tu Carrera</h4>
+                        <div class="career-grid" id="careerGrid">
+                            <!-- Se llena dinámicamente -->
+                        </div>
+                        <input type="hidden" id="carrera_id" name="carrera_id" required>
+                    </div>
+
+                    <!-- Selector de Semestre -->
+                    <div class="semester-selector" id="semesterSelector" style="display: none;">
+                        <h4><i class="fas fa-calendar-alt"></i> Selecciona tu Semestre</h4>
+                        <div class="semester-grid" id="semesterGrid">
+                            <!-- Se llena dinámicamente -->
+                        </div>
+                        <input type="hidden" id="semestre" name="semestre" required>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i>
+                            Registrar Estudiante
+                        </button>
+                        <button type="button" class="btn btn-secondary" id="cancelBtn">
+                            <i class="fas fa-times"></i>
+                            Cancelar
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- UIDs de Prueba -->
+            <div class="test-section">
+                <h4><i class="fas fa-flask"></i> UIDs de Prueba</h4>
+                <div class="test-uids">
+                    <div class="uid-item" onclick="simulateRFID('EST202301')">
+                        <i class="fas fa-user-graduate"></i>
+                        <span>EST202301</span>
+                        <small>María González (ISC)</small>
+                    </div>
+                    <div class="uid-item" onclick="simulateRFID('EST202302')">
+                        <i class="fas fa-user-graduate"></i>
+                        <span>EST202302</span>
+                        <small>Carlos Hernández (II)</small>
+                    </div>
+                    <div class="uid-item" onclick="simulateRFID('PROF001')">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                        <span>PROF001</span>
+                        <small>Dr. Juan Carlos</small>
+                    </div>
+                    <div class="uid-item" onclick="simulateRFID('NEWUSER123')">
+                        <i class="fas fa-user-plus"></i>
+                        <span>NEWUSER123</span>
+                        <small>Usuario Nuevo</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <a href="/" class="btn btn-outline">
+                <i class="fas fa-home"></i>
+                Volver al Inicio
+            </a>
+        </div>
+    </div>
+
+    <script src="/static/enhanced-welcome.js"></script>
+</body>
+</html>

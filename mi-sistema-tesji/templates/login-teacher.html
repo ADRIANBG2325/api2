@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Login Maestro - TESJI</title>
+   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+   <style>
+       * { margin: 0; padding: 0; box-sizing: border-box; }
+       body { 
+           font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+           background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%); 
+           min-height: 100vh; 
+           display: flex; 
+           align-items: center; 
+           justify-content: center;
+           color: white;
+       }
+       
+       .login-container { 
+           background: rgba(255,255,255,0.1); 
+           padding: 40px; 
+           border-radius: 20px; 
+           backdrop-filter: blur(10px); 
+           box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+           width: 90%; 
+           max-width: 500px; 
+       }
+       
+       .header { text-align: center; margin-bottom: 40px; }
+       .header i { font-size: 4em; color: #3498db; margin-bottom: 20px; }
+       .header h1 { font-size: 2.5em; margin-bottom: 10px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+       .header p { opacity: 0.9; font-size: 1.1em; }
+       
+       .tabs { display: flex; margin-bottom: 30px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; }
+       .tab { flex: 1; padding: 15px; text-align: center; cursor: pointer; transition: all 0.3s ease; border: none; background: transparent; color: white; font-size: 1.1em; }
+       .tab.active { background: rgba(255,255,255,0.2); }
+       .tab:hover { background: rgba(255,255,255,0.15); }
+       
+       .form-section { display: none; }
+       .form-section.active { display: block; }
+       
+       .form-group { margin-bottom: 25px; }
+       .form-group label { display: flex; align-items: center; gap: 10px; font-weight: 600; margin-bottom: 8px; font-size: 1.1em; }
+       .form-group label i { color: #3498db; width: 20px; }
+       .form-group input, .form-group select { 
+           width: 100%; 
+           padding: 15px 20px; 
+           border: 2px solid rgba(255,255,255,0.3); 
+           border-radius: 10px; 
+           font-size: 1.1em; 
+           transition: all 0.3s ease; 
+           background: rgba(255,255,255,0.1);
+           color: white;
+       }
+       .form-group input::placeholder { color: rgba(255,255,255,0.7); }
+       .form-group input:focus, .form-group select:focus { 
+           outline: none; 
+           border-color: #3498db; 
+           box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2); 
+           transform: translateY(-2px); 
+       }
+       
+       .btn { 
+           width: 100%; 
+           padding: 15px; 
+           border: none; 
+           border-radius: 10px; 
+           font-size: 1.2em; 
+           font-weight: 600; 
+           cursor: pointer; 
+           transition: all 0.3s ease; 
+           display: flex; 
+           align-items: center; 
+           justify-content: center; 
+           gap: 10px; 
+           margin-bottom: 15px;
+       }
+       .btn-primary { background: linear-gradient(135deg, #3498db, #2980b9); color: white; }
+       .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(52, 152, 219, 0.4); }
+       .btn-success { background: linear-gradient(135deg, #27ae60, #229954); color: white; }
+       .btn-success:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(39, 174, 96, 0.4); }
+       .btn-outline { background: transparent; color: white; border: 2px solid rgba(255,255,255,0.3); }
+       .btn-outline:hover { background: rgba(255,255,255,0.1); }
+       
+       .demo-credentials { 
+           margin-top: 30px; 
+           padding: 20px; 
+           background: rgba(255,255,255,0.1); 
+           border-radius: 10px; 
+           border-left: 4px solid #f39c12;
+       }
+       .demo-credentials h4 { color: #f39c12; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
+       .demo-credentials .cred-item { 
+           display: flex; 
+           justify-content: space-between; 
+           margin: 10px 0; 
+           padding: 10px; 
+           background: rgba(255,255,255,0.1); 
+           border-radius: 5px; 
+           cursor: pointer;
+           transition: all 0.3s ease;
+       }
+       .demo-credentials .cred-item:hover { background: rgba(255,255,255,0.2); transform: translateX(5px); }
+       
+       .message { 
+           margin: 20px 0; 
+           padding: 15px; 
+           border-radius: 10px; 
+           text-align: center; 
+           display: none; 
+       }
+       .message.success { background: rgba(39, 174, 96, 0.2); border: 1px solid #27ae60; color: #27ae60; }
+       .message.error { background: rgba(231, 76, 60, 0.2); border: 1px solid #e74c3c; color: #e74c3c; }
+       
+       .footer { text-align: center; margin-top: 30px; }
+       
+       @media (max-width: 768px) {
+           .login-container { padding: 25px; margin: 20px; }
+           .header h1 { font-size: 2em; }
+           .tabs { flex-direction: column; }
+       }
+   </style>
+</head>
+<body>
+   <div class="login-container">
+       <div class="header">
+           <i class="fas fa-chalkboard-teacher"></i>
+           <h1>Panel de Maestro</h1>
+           <p>TESJI - Sistema RFID</p>
+       </div>
+
+       <!-- Pestañas -->
+       <div class="tabs">
+           <button class="tab active" onclick="showTab('login')">
+               <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+           </button>
+           <button class="tab" onclick="showTab('register')">
+               <i class="fas fa-user-plus"></i> Registrarse
+           </button>
+       </div>
+
+       <!-- Sección de Login -->
+       <div id="login-section" class="form-section active">
+           <form id="loginForm">
+               <div class="form-group">
+                   <label for="login-matricula">
+                       <i class="fas fa-id-badge"></i>
+                       Matrícula
+                   </label>
+                   <input type="text" id="login-matricula" name="matricula" required placeholder="Ej: PROF001">
+               </div>
+
+               <div class="form-group">
+                   <label for="login-password">
+                       <i class="fas fa-lock"></i>
+                       Contraseña
+                   </label>
+                   <input type="password" id="login-password" name="password" required placeholder="Ingresa tu contraseña">
+               </div>
+
+               <button type="submit" class="btn btn-primary">
+                   <i class="fas fa-sign-in-alt"></i>
+                   Iniciar Sesión
+               </button>
+           </form>
+
+           <!-- Credenciales de prueba -->
+           <div class="demo-credentials">
+               <h4><i class="fas fa-key"></i> Credenciales de Prueba</h4>
+               <div class="cred-item" onclick="fillCredentials('PROF001', '123456')">
+                   <span><strong>Dr. Juan Carlos</strong></span>
+                   <span>PROF001 / 123456</span>
+               </div>
+               <div class="cred-item" onclick="fillCredentials('PROF002', '123456')">
+                   <span><strong>Ing. María López</strong></span>
+                   <span>PROF002 / 123456</span>
+               </div>
+               <div class="cred-item" onclick="fillCredentials('PROF003', '123456')">
+                   <span><strong>Víctor Maya</strong></span>
+                   <span>PROF003 / 123456</span>
+               </div>
+           </div>
+       </div>
+
+       <!-- Sección de Registro -->
+       <div id="register-section" class="form-section">
+           <form id="registerForm">
+               <div class="form-group">
+                   <label for="register-nombre">
+                       <i class="fas fa-user"></i>
+                       Nombre Completo
+                   </label>
+                   <input type="text" id="register-nombre" name="nombre_completo" required placeholder="Ej: Dr. Juan Carlos Profesor">
+               </div>
+
+               <div class="form-group">
+                   <label for="register-matricula">
+                       <i class="fas fa-id-badge"></i>
+                       Matrícula
+                   </label>
+                   <input type="text" id="register-matricula" name="matricula" required placeholder="Ej: PROF003">
+               </div>
+
+               <div class="form-group">
+                   <label for="register-email">
+                       <i class="fas fa-envelope"></i>
+                       Correo Electrónico
+                   </label>
+                   <input type="email" id="register-email" name="email" required placeholder="Ej: profesor@tesji.edu.mx">
+               </div>
+
+               <div class="form-group">
+                   <label for="register-password">
+                       <i class="fas fa-lock"></i>
+                       Contraseña
+                   </label>
+                   <input type="password" id="register-password" name="password" required placeholder="Crea una contraseña segura">
+               </div>
+
+               <div class="form-group">
+                   <label for="register-uid">
+                       <i class="fas fa-id-card"></i>
+                       UID RFID (Opcional)
+                   </label>
+                   <input type="text" id="register-uid" name="uid" placeholder="Escanea tu tarjeta RFID o déjalo vacío">
+               </div>
+
+               <button type="submit" class="btn btn-success">
+                   <i class="fas fa-user-plus"></i>
+                   Registrar Maestro
+               </button>
+           </form>
+       </div>
+
+       <!-- Mensajes -->
+       <div id="message" class="message"></div>
+
+       <!-- Footer -->
+       <div class="footer">
+           <button onclick="window.location.href='/'" class="btn btn-outline">
+               <i class="fas fa-home"></i>
+               Volver al Inicio
+           </button>
+       </div>
+   </div>
+
+   <script>
+       // Cambiar entre pestañas
+       function showTab(tabName) {
+           // Ocultar todas las secciones
+           document.querySelectorAll('.form-section').forEach(section => {
+               section.classList.remove('active');
+           });
+           
+           // Remover clase active de todas las pestañas
+           document.querySelectorAll('.tab').forEach(tab => {
+               tab.classList.remove('active');
+           });
+           
+           // Mostrar sección seleccionada
+           document.getElementById(tabName + '-section').classList.add('active');
+           
+           // Activar pestaña seleccionada
+           event.target.classList.add('active');
+           
+           // Limpiar mensajes
+           hideMessage();
+       }
+
+       // Llenar credenciales de prueba
+       function fillCredentials(matricula, password) {
+           document.getElementById('login-matricula').value = matricula;
+           document.getElementById('login-password').value = password;
+       }
+
+       // Mostrar mensaje
+       function showMessage(text, type) {
+           const messageDiv = document.getElementById('message');
+           messageDiv.textContent = text;
+           messageDiv.className = `message ${type}`;
+           messageDiv.style.display = 'block';
+       }
+
+       // Ocultar mensaje
+       function hideMessage() {
+           document.getElementById('message').style.display = 'none';
+       }
+
+       // Manejar login
+       document.getElementById('loginForm').addEventListener('submit', async (e) => {
+           e.preventDefault();
+           
+           const formData = new FormData(e.target);
+           const loginData = {
+               matricula: formData.get('matricula'),
+               password: formData.get('password')
+           };
+
+           console.log('🔐 Intentando login:', loginData.matricula);
+
+           try {
+               showMessage('Verificando credenciales...', 'success');
+               
+               const response = await fetch('/api/teacher/login', {
+                   method: 'POST',
+                   headers: {
+                       'Content-Type': 'application/json'
+                   },
+                   body: JSON.stringify(loginData)
+               });
+
+               const result = await response.json();
+               console.log('📥 Respuesta del servidor:', result);
+
+               if (result.success && result.access_token) {
+                   showMessage('¡Login exitoso! Redirigiendo...', 'success');
+                   
+                   // Guardar token y datos del maestro
+                   localStorage.setItem('teacher_token', result.access_token);
+                   if (result.user) {
+                       localStorage.setItem('teacher_data', JSON.stringify(result.user));
+                   }
+                   
+                   console.log('✅ Token guardado, redirigiendo...');
+                   
+                   setTimeout(() => {
+                       window.location.href = '/teacher.html';
+                   }, 1500);
+               } else {
+                   showMessage(result.message || 'Error en las credenciales', 'error');
+                   console.error('❌ Error en login:', result.message);
+               }
+           } catch (error) {
+               console.error('❌ Error de conexión:', error);
+               showMessage('Error de conexión. Intenta nuevamente.', 'error');
+           }
+       });
+
+       // Manejar registro
+       document.getElementById('registerForm').addEventListener('submit', async (e) => {
+           e.preventDefault();
+           
+           const formData = new FormData(e.target);
+           const registerData = {
+               nombre_completo: formData.get('nombre_completo'),
+               matricula: formData.get('matricula'),
+               email: formData.get('email'),
+               password: formData.get('password'),
+               uid: formData.get('uid') || null
+           };
+
+           try {
+               showMessage('Registrando maestro...', 'success');
+               
+               const response = await fetch('/api/teacher/register', {
+                   method: 'POST',
+                   headers: {
+                       'Content-Type': 'application/json'
+                   },
+                   body: JSON.stringify(registerData)
+               });
+
+               const result = await response.json();
+
+               if (result.success) {
+                   showMessage('¡Maestro registrado exitosamente!', 'success');
+                   
+                   // Limpiar formulario
+                   e.target.reset();
+                   
+                   // Cambiar a pestaña de login después de 2 segundos
+                   setTimeout(() => {
+                       showTab('login');
+                       // Pre-llenar matrícula en login
+                       document.getElementById('login-matricula').value = registerData.matricula;
+                   }, 2000);
+               } else {
+                   showMessage(result.message, 'error');
+               }
+           } catch (error) {
+               console.error('Error en registro:', error);
+               showMessage('Error de conexión. Intenta nuevamente.', 'error');
+           }
+       });
+
+       // Inicialización
+       document.addEventListener('DOMContentLoaded', () => {
+           console.log('🔐 Página de login de maestro cargada');
+           hideMessage();
+       });
+   </script>
+</body>
+</html>

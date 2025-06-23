@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: tesji-system
+    env: python
+    region: oregon
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: python unified_server.py
+    envVars:
+      - key: TESJI_SECRET_KEY
+        value: tesji_secret_key_2024_super_secure_render
+      - key: PORT
+        generateValue: true
+    healthCheckPath: /api/health
